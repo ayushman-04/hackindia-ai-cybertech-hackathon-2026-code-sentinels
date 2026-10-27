@@ -1,0 +1,803 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+
+import '../config/app_config.dart';
+import '../offline/offline_report_store.dart';
+import '../theme/app_theme.dart';
+
+class SafetyEmergencySheet extends StatelessWidget {
+  const SafetyEmergencySheet({super.key});
+
+  static void show(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: TerraTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (_) => const SafetyEmergencySheet(),
+    );
+  }
+
+  Future<void> _launchWebUrl(BuildContext context, String path, String failureMsg) async {
+    final fullUrl = '${AppConfig.webUrl}$path';
+    final uri = Uri.parse(fullUrl);
+    try {
+      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failureMsg)));
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(failureMsg)));
+      }
+    }
+  }
+
+  Future<void> _callHotline(BuildContext context, String number) async {
+    final uri = Uri.parse('tel:$number');
+    try {
+      await launchUrl(uri);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Hotline number: $number')),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.85,
+      ),
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Drag Handle
+          Center(
+            child: Container(
+              width: 36,
+              height: 4,
+              decoration: BoxDecoration(
+                color: TerraTheme.border,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          // Modal Title Header
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: TerraTheme.critical.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: TerraTheme.critical.withValues(alpha: 0.4)),
+                ),
+                child: const Icon(Icons.emergency_outlined, color: TerraTheme.critical, size: 26),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'SAFETY & EMERGENCY RESPONSE',
+                      style: TextStyle(
+                        color: TerraTheme.critical,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 1.0,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Disaster Hotlines & Field Guidance',
+                      style: TextStyle(
+                        color: TerraTheme.textPrimary,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                // Hotlines Card
+                const Text(
+                  'STATE DISASTER MANAGEMENT HOTLINES',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: TerraTheme.background,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: TerraTheme.border),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => _callHotline(context, '1077'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: Column(
+                              children: [
+                                Text('SDMA HOTLINE', style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 4),
+                                Text('1077', style: TextStyle(color: TerraTheme.critical, fontSize: 22, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 2),
+                                Text('Tap to Call', style: TextStyle(color: TerraTheme.textSecondary, fontSize: 10)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40, child: VerticalDivider(color: TerraTheme.border)),
+                      Expanded(
+                        child: InkWell(
+                          onTap: () => _callHotline(context, '1078'),
+                          borderRadius: BorderRadius.circular(12),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            child: Column(
+                              children: [
+                                Text('NDMA HOTLINE', style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 4),
+                                Text('1078', style: TextStyle(color: TerraTheme.critical, fontSize: 22, fontWeight: FontWeight.bold)),
+                                SizedBox(height: 2),
+                                Text('Tap to Call', style: TextStyle(color: TerraTheme.textSecondary, fontSize: 10)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 18),
+
+                // Web Handoff Actions
+                const Text(
+                  'FIELD PLATFORM HANDOFFS',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _HandoffTile(
+                        icon: Icons.other_houses_outlined,
+                        color: TerraTheme.primary,
+                        title: 'Safety Shelters',
+                        subtitle: 'Offline cache available',
+                        onTap: () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Offline shelter cache active. The web shelters view is not used while disconnected.')),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _HandoffTile(
+                        icon: Icons.map_outlined,
+                        color: TerraTheme.secondary,
+                        title: 'Web Risk Map',
+                        subtitle: 'Open GIS Portal View',
+                        onTap: () => _launchWebUrl(context, '', 'Unable to launch Web Risk Map.'),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                const Text(
+                  'RELIEF SHELTERS (LIVE / OFFLINE CACHE)',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                const _SheltersSection(),
+                const SizedBox(height: 18),
+
+                // Emergency SMS Dispatch Section
+                const Text(
+                  'EMERGENCY SMS DISPATCH GATEWAY',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                const _EmergencySmsSection(),
+                const SizedBox(height: 18),
+
+                // Field Safety Guidance
+                const Text(
+                  'FIELD SAFETY PROTOCOLS',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 0.8),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: TerraTheme.background,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: TerraTheme.border),
+                  ),
+                  child: const Column(
+                    children: [
+                      _GuidelineItem(
+                        icon: Icons.warning_amber_rounded,
+                        color: TerraTheme.warning,
+                        text: 'Watch for warning signs: new soil cracks, tilting trees, or sudden stream water discoloration.',
+                      ),
+                      SizedBox(height: 10),
+                      _GuidelineItem(
+                        icon: Icons.directions_run_rounded,
+                        color: TerraTheme.primary,
+                        text: 'Move perpendicular to the landslide path toward higher stable ground immediately upon rumble noises.',
+                      ),
+                      SizedBox(height: 10),
+                      _GuidelineItem(
+                        icon: Icons.gavel_rounded,
+                        color: TerraTheme.secondary,
+                        text: 'Avoid river channels and low-lying drainage paths during prolonged intense rainfall.',
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+
+          // Dismiss Button
+          SizedBox(
+            width: double.infinity,
+            height: 48,
+            child: ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TerraTheme.surfaceElevated,
+                foregroundColor: TerraTheme.textPrimary,
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  side: const BorderSide(color: TerraTheme.border),
+                ),
+              ),
+              child: const Text('DISMISS', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HandoffTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _HandoffTile({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: TerraTheme.background,
+      borderRadius: BorderRadius.circular(14),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: TerraTheme.border),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: color, size: 20),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(title, style: const TextStyle(color: TerraTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 2),
+                    Text(subtitle, style: const TextStyle(color: TerraTheme.textMuted, fontSize: 10)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _SheltersSection extends StatefulWidget {
+  const _SheltersSection();
+
+  @override
+  State<_SheltersSection> createState() => _SheltersSectionState();
+}
+
+class _SheltersSectionState extends State<_SheltersSection> {
+  List<Map<String, dynamic>> _shelters = const [];
+  String _sourceLabel = 'LOADING';
+  bool _loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadShelters();
+  }
+
+  Future<void> _loadShelters() async {
+    try {
+      final uri = Uri.parse('${AppConfig.apiUrl}/api/alerts/shelters');
+      final res = await http.get(uri).timeout(const Duration(seconds: 2));
+      if (res.statusCode == 200) {
+        final decoded = jsonDecode(res.body);
+        if (decoded is List) {
+          final parsed = decoded
+              .whereType<Map>()
+              .map((item) => Map<String, dynamic>.from(item))
+              .toList();
+          try {
+            await OfflineReportStore().saveShelterCache('all', res.body);
+          } catch (_) {}
+          if (mounted) {
+            setState(() {
+              _shelters = parsed;
+              _sourceLabel = 'LIVE API';
+              _loading = false;
+            });
+          }
+          return;
+        }
+      }
+    } catch (_) {}
+
+    // Fallback to SQLite shelter_cache when offline
+    try {
+      final cachedJson = await OfflineReportStore().shelterCache('all');
+      if (cachedJson != null && cachedJson.isNotEmpty) {
+        final decoded = jsonDecode(cachedJson);
+        if (decoded is List) {
+          final parsed = decoded
+              .whereType<Map>()
+              .map((item) => Map<String, dynamic>.from(item))
+              .toList();
+          if (mounted) {
+            setState(() {
+              _shelters = parsed;
+              _sourceLabel = 'OFFLINE CACHE';
+              _loading = false;
+            });
+          }
+          return;
+        }
+      }
+    } catch (_) {}
+
+    if (mounted) {
+      setState(() {
+        _shelters = const [];
+        _sourceLabel = 'UNAVAILABLE';
+        _loading = false;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: TerraTheme.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: TerraTheme.border),
+      ),
+      child: _loading
+          ? const Text(
+              'Loading shelter availability from central database...',
+              style: TextStyle(color: TerraTheme.textMuted, fontSize: 11),
+            )
+          : _shelters.isEmpty
+              ? const Text(
+                  'No cached or live shelter records available yet. Connect to sync official shelter availability.',
+                  style: TextStyle(color: TerraTheme.textMuted, fontSize: 11),
+                )
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int i = 0; i < _shelters.length; i++) ...[
+                      if (i > 0) const SizedBox(height: 8),
+                      _OfflineShelterItem(
+                        title: (_shelters[i]['name'] ?? 'Relief Shelter').toString(),
+                        subtitle:
+                            'Occupancy: ${_shelters[i]['capacityCurrent'] ?? 0}/${_shelters[i]['capacityMax'] ?? 0} (${_shelters[i]['status'] ?? 'UNKNOWN'}) · $_sourceLabel',
+                      ),
+                    ],
+                  ],
+                ),
+    );
+  }
+}
+
+class _OfflineShelterItem extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _OfflineShelterItem({
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: TerraTheme.primary.withValues(alpha: 0.15),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: const Icon(Icons.house_outlined, color: TerraTheme.primary, size: 18),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(color: TerraTheme.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 2),
+              Text(subtitle, style: const TextStyle(color: TerraTheme.textMuted, fontSize: 10)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _GuidelineItem extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String text;
+
+  const _GuidelineItem({
+    required this.icon,
+    required this.color,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, color: color, size: 16),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(color: TerraTheme.textSecondary, fontSize: 12, height: 1.3),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _EmergencySmsSection extends StatefulWidget {
+  const _EmergencySmsSection();
+
+  @override
+  State<_EmergencySmsSection> createState() => _EmergencySmsSectionState();
+}
+
+class _EmergencySmsSectionState extends State<_EmergencySmsSection> {
+  bool _sending = false;
+  String? _status;
+  String? _statusMessage;
+
+  Future<void> _openSmsApp(BuildContext context) async {
+    final uri = Uri(
+      scheme: 'sms',
+      path: '1078',
+      queryParameters: const {
+        'body': 'Emergency assistance requested. Please contact the disaster response desk.',
+      },
+    );
+    try {
+      final launched = await launchUrl(uri);
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to open the device SMS app.')),
+        );
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Unable to open the device SMS app.')),
+        );
+      }
+    }
+  }
+
+  Future<void> _sendEmergencySms() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: TerraTheme.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: TerraTheme.border),
+        ),
+        title: const Text(
+          'CONFIRM EMERGENCY SMS DISPATCH',
+          style: TextStyle(color: TerraTheme.critical, fontSize: 14, fontWeight: FontWeight.bold),
+        ),
+        content: const Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Recipient Target:', style: TextStyle(color: TerraTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('SDMA Emergency Desk (1077 / Duty Officer)', style: TextStyle(color: TerraTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+            SizedBox(height: 10),
+            Text('Message Payload:', style: TextStyle(color: TerraTheme.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+            Text('[GSI-LEWS ALERT] Field Emergency Evacuation Order & SDRF dispatch request.', style: TextStyle(color: TerraTheme.textSecondary, fontSize: 12)),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('CANCEL', style: TextStyle(color: TerraTheme.textMuted, fontWeight: FontWeight.bold)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: TerraTheme.critical,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: const Text('DISPATCH SMS', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    setState(() {
+      _sending = true;
+      _status = null;
+      _statusMessage = null;
+    });
+
+    try {
+      final url = AppConfig.apiUri('alerts/sms-broadcast');
+      final res = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        body: jsonEncode({
+          'headline': 'MOBILE EMERGENCY FIELD ALERT',
+          'instruction': 'Immediate SDRF assistance & evacuation requested.',
+          'state': 'sikkim',
+        }),
+      );
+
+      if (res.statusCode == 200) {
+        final data = jsonDecode(res.body) as Map<String, dynamic>;
+        setState(() {
+          _status = data['status'] as String?;
+          _statusMessage = data['message'] as String?;
+        });
+      } else {
+        setState(() {
+          _status = 'dispatch_failed';
+          _statusMessage = 'Backend HTTP response ${res.statusCode}';
+        });
+      }
+    } catch (_) {
+      setState(() {
+        _status = 'provider_unavailable';
+        _statusMessage = 'Unable to connect to backend SMS service.';
+      });
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
+
+  Widget _buildStatusBadge() {
+    if (_sending) {
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: TerraTheme.secondary.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: TerraTheme.secondary.withValues(alpha: 0.3)),
+        ),
+        child: const Row(
+          children: [
+            SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2, color: TerraTheme.secondary)),
+            SizedBox(width: 10),
+            Text('Sending emergency SMS request...', style: TextStyle(color: TerraTheme.secondary, fontSize: 12, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      );
+    }
+
+    if (_status == null) return const SizedBox.shrink();
+
+    Color color;
+    String label;
+    IconData icon;
+
+    switch (_status) {
+      case 'sent':
+        color = TerraTheme.primary;
+        label = 'SMS sent';
+        icon = Icons.check_circle_outline;
+        break;
+      case 'demo':
+        color = TerraTheme.warning;
+        label = 'DEMO — No real SMS was sent';
+        icon = Icons.info_outline;
+        break;
+      case 'provider_not_configured':
+        color = TerraTheme.warning;
+        label = 'SMS service not configured';
+        icon = Icons.warning_amber_rounded;
+        break;
+      case 'provider_unavailable':
+        color = TerraTheme.critical;
+        label = 'SMS provider unavailable';
+        icon = Icons.cloud_off_rounded;
+        break;
+      case 'dispatch_failed':
+      default:
+        color = TerraTheme.critical;
+        label = 'SMS dispatch failed';
+        icon = Icons.error_outline;
+        break;
+    }
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, color: color, size: 16),
+              const SizedBox(width: 6),
+              Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          if (_statusMessage != null) ...[
+            const SizedBox(height: 4),
+            Text(_statusMessage!, style: const TextStyle(color: TerraTheme.textSecondary, fontSize: 11)),
+          ],
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: TerraTheme.background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: TerraTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: TerraTheme.critical.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: const Icon(Icons.sms_outlined, color: TerraTheme.critical, size: 20),
+              ),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('DISASTER SMS BROADCAST', style: TextStyle(color: TerraTheme.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 2),
+                    Text('Target: State Helpline (1077 / Duty Officer)', style: TextStyle(color: TerraTheme.textMuted, fontSize: 10)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (_status != null || _sending) ...[
+            _buildStatusBadge(),
+            const SizedBox(height: 12),
+          ],
+          SizedBox(
+            width: double.infinity,
+            height: 44,
+            child: ElevatedButton.icon(
+              onPressed: _sending ? null : _sendEmergencySms,
+              icon: const Icon(Icons.send_rounded, size: 16),
+              label: const Text('DISPATCH EMERGENCY SMS ALERT', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TerraTheme.critical,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            height: 42,
+            child: OutlinedButton.icon(
+              onPressed: () => _openSmsApp(context),
+              icon: const Icon(Icons.sms_outlined, size: 16),
+              label: const Text('Open SMS app → 1078', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: TerraTheme.secondary,
+                side: const BorderSide(color: TerraTheme.border),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

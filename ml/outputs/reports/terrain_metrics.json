@@ -1,0 +1,14 @@
+{
+  "source_dataset": "NER_Landslide_ML_Dataset.csv",
+  "total_records": 18033,
+  "training_records": 14426,
+  "test_records": 3607,
+  "positive_records": 8744,
+  "negative_records": 9289,
+  "feature_count": 119,
+  "accuracy": 0.8489,
+  "precision": 0.7875,
+  "recall": 0.9428,
+  "f1_score": 0.8582,
+  "roc_auc": 0.925
+}

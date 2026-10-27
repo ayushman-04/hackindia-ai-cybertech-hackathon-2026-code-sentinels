@@ -1,0 +1,513 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #051424;
+  --color-surface-dim: #051424;
+  --color-surface-bright: #2c3a4c;
+  --color-surface-container-lowest: #010f1f;
+  --color-surface-container-low: #0d1c2d;
+  --color-surface-container: #122131;
+  --color-surface-container-high: #1c2b3c;
+  --color-surface-container-highest: #273647;
+  --color-surface-variant: #273647;
+
+  --color-on-surface: #d4e4fa;
+  --color-on-surface-variant: #bfc8cd;
+  --color-inverse-surface: #d4e4fa;
+  --color-inverse-on-surface: #233143;
+
+  --color-outline: #8a9297;
+  --color-outline-variant: #40484c;
+
+  --color-primary: #90cfec;
+  --color-on-primary: #003546;
+  --color-primary-container: #0d5c75;
+  --color-on-primary-container: #93d3ef;
+  --color-primary-fixed: #bde9ff;
+  --color-primary-fixed-dim: #90cfec;
+  --color-on-primary-fixed: #001f2a;
+  --color-on-primary-fixed-variant: #004d64;
+
+  --color-secondary: #44d8f1;
+  --color-on-secondary: #00363e;
+  --color-secondary-container: #00bcd4;
+  --color-on-secondary-container: #004650;
+  --color-secondary-fixed: #a1efff;
+  --color-secondary-fixed-dim: #44d8f1;
+  --color-on-secondary-fixed: #001f25;
+  --color-on-secondary-fixed-variant: #004e59;
+
+  --color-tertiary: #ffb870;
+  --color-on-tertiary: #4a2800;
+  --color-tertiary-container: #7d4800;
+  --color-on-tertiary-container: #ffbc7a;
+  --color-tertiary-fixed: #ffdcbe;
+  --color-tertiary-fixed-dim: #ffb870;
+  --color-on-tertiary-fixed: #2c1600;
+  --color-on-tertiary-fixed-variant: #693c00;
+
+  --color-error: #ffb4ab;
+  --color-on-error: #690005;
+  --color-error-container: #93000a;
+  --color-on-error-container: #ffdad6;
+
+  --color-background: #051424;
+  --color-on-background: #d4e4fa;
+
+  --font-sans: 'Public Sans', sans-serif;
+  --font-body: 'Public Sans', sans-serif;
+  --font-headline: 'Public Sans', sans-serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-outline-variant);
+    box-sizing: border-box;
+  }
+  body {
+    font-family: 'Public Sans', sans-serif;
+    background-color: var(--color-surface);
+    color: var(--color-on-surface);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 3px;
+  }
+}
+
+.app-shell {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgb(35 184 160 / 0.08), transparent 28rem),
+    radial-gradient(circle at 88% 22%, rgb(42 156 201 / 0.08), transparent 32rem),
+    linear-gradient(180deg, #071827 0%, #051424 52%, #071522 100%);
+}
+
+.app-main {
+  position: relative;
+  z-index: 1;
+}
+
+.theme-light.app-shell {
+  background-image:
+    radial-gradient(circle at 12% 8%, rgb(16 185 129 / 0.08), transparent 28rem),
+    radial-gradient(circle at 88% 22%, rgb(14 165 233 / 0.08), transparent 32rem),
+    linear-gradient(180deg, #f8fbfc 0%, #f4f7fa 52%, #eef4f6 100%);
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #051424;
+}
+::-webkit-scrollbar-thumb {
+  background: #273647;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #40484c;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+@media (max-width: 639px) {
+  header {
+    position: relative;
+  }
+
+  nav {
+    top: 0;
+  }
+
+  .main-command-bar {
+    flex-wrap: wrap;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .header-brand {
+    flex: 1 1 auto;
+  }
+
+  .header-controls {
+    flex: 0 1 auto;
+    justify-content: flex-end;
+  }
+
+  .header-tagline {
+    max-width: 11rem;
+    overflow: visible;
+    white-space: normal;
+    line-height: 1.2;
+    text-overflow: clip;
+  }
+
+  .home-hero,
+  .home-hero-content {
+    min-height: 440px;
+  }
+
+  .home-hero-content {
+    justify-content: flex-start;
+    padding: 1.75rem 1rem 2rem;
+  }
+
+  .home-hero-title {
+    max-width: 20rem;
+    font-size: clamp(2.25rem, 11vw, 3.25rem);
+  }
+
+  .home-hero-description {
+    max-width: 31rem;
+    margin-top: 0.9rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .home-risk-search {
+    margin-top: 1.25rem;
+  }
+
+  .home-risk-search > div > div {
+    flex-wrap: wrap;
+  }
+
+  .home-risk-search input {
+    min-width: 0;
+    flex: 1 1 9rem;
+  }
+
+  .home-risk-search button {
+    flex: 1 1 100%;
+    margin-top: 0.25rem;
+  }
+
+  .home-risk-submit {
+    min-width: 7.25rem;
+  }
+
+  .navigation-scroll {
+    scroll-padding-inline: 0.25rem;
+  }
+
+  .navigation-badge {
+    display: none;
+  }
+
+  .chat-launcher {
+    margin-bottom: 5.5rem;
+  }
+
+  .earthquake-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  header {
+    position: relative;
+  }
+
+  nav {
+    top: 0;
+  }
+
+  .main-command-bar {
+    flex-wrap: wrap;
+  }
+
+  .header-brand {
+    flex: 1 1 auto;
+  }
+
+  .header-controls {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 479px) {
+  .header-control-label {
+    display: none;
+  }
+
+  .main-command-bar {
+    gap: 0.5rem;
+  }
+
+  .header-controls {
+    gap: 0.375rem;
+  }
+
+  .header-controls > button,
+  .header-controls > div > div {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+/* ========================================================
+   LIGHT THEME OVERRIDES
+   ======================================================== */
+.theme-light {
+  color-scheme: light;
+  --color-surface: #f8fafc;
+  --color-on-surface: #0f172a;
+}
+
+/* Base Surfaces & Layout */
+.theme-light,
+.theme-light.bg-\[\#051424\],
+.theme-light .bg-\[\#051424\] {
+  background-color: #f8fafc !important;
+}
+
+.theme-light header {
+  background-color: rgba(255, 255, 255, 0.96) !important;
+  border-bottom-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04);
+}
+
+.theme-light nav {
+  background-color: #ffffff !important;
+  border-bottom-color: #e2e8f0 !important;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+}
+
+.theme-light footer {
+  background-color: #f1f5f9 !important;
+  border-top-color: #e2e8f0 !important;
+  color: #475569 !important;
+}
+
+/* Card Containers & Panels */
+.theme-light .bg-\[\#0d1c2d\] {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.04);
+}
+
+.theme-light .bg-\[\#122131\] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light .bg-\[\#010f1f\],
+.theme-light .bg-\[\#010f1f\]\/80 {
+  background-color: rgba(241, 245, 249, 0.85) !important;
+}
+
+.theme-light .border-\[\#1c2b3c\],
+.theme-light .border-\[\#273647\] {
+  border-color: #e2e8f0 !important;
+}
+
+/* Typography & Contrast */
+.theme-light .text-\[\#d4e4fa\] {
+  color: #0f172a !important;
+}
+
+.theme-light .text-\[\#bfc8cd\] {
+  color: #334155 !important;
+}
+
+.theme-light .text-\[\#8a9297\] {
+  color: #64748b !important;
+}
+
+.theme-light h1.text-white,
+.theme-light h2.text-white,
+.theme-light h3.text-white,
+.theme-light h4.text-white,
+.theme-light div.text-white,
+.theme-light span.text-white:not(.keep-white) {
+  color: #0f172a !important;
+}
+
+/* Accent Colors & Badges */
+.theme-light .bg-\[\#93000a\] {
+  background-color: #dc2626 !important;
+}
+
+.theme-light .bg-\[\#93000a\] *,
+.theme-light .bg-red-600 * {
+  color: #ffffff !important;
+}
+
+.theme-light .text-\[\#44d8f1\] {
+  color: #0284c7 !important;
+}
+
+.theme-light .bg-\[\#00363e\],
+.theme-light .bg-\[\#00363e\]\/40,
+.theme-light .bg-\[\#00363e\]\/60 {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+}
+
+.theme-light .text-\[\#90cfec\] {
+  color: #0284c7 !important;
+}
+
+.theme-light .bg-\[\#0d5c75\],
+.theme-light .bg-\[\#0d5c75\]\/50 {
+  background-color: #e0f2fe !important;
+  color: #0369a1 !important;
+}
+
+.theme-light .text-\[\#ffb870\] {
+  color: #d97706 !important;
+}
+
+.theme-light .bg-\[\#7d4800\],
+.theme-light .bg-\[\#7d4800\]\/40 {
+  background-color: #fef3c7 !important;
+  color: #92400e !important;
+}
+
+/* Form inputs & select dropdowns */
+.theme-light select,
+.theme-light input,
+.theme-light textarea {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border-color: #cbd5e1 !important;
+}
+
+.theme-light select:focus,
+.theme-light input:focus,
+.theme-light textarea:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.2) !important;
+}
+
+/* Scrollbars in Light Mode */
+.theme-light ::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.theme-light ::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+}
+.theme-light ::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+
+
+/* River light traveling downstream */
+@keyframes river-flow {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: -220;
+  }
+}
+
+/* Cinematic stage sizing.
+   Landscape / desktop: cover the viewport (fills edge to edge).
+   Portrait / mobile: fit the whole 16:9 scene so nothing is cropped,
+   with an ambient blurred fill behind it. */
+.scene-stage {
+  width: max(100%, calc(100vh * 16 / 9));
+  height: max(100vh, calc(100vw * 9 / 16));
+}
+.scene-ambient {
+  display: none;
+}
+/* Portrait / mobile: fit the ENTIRE 16:9 scene so nothing is cropped,
+   with an ambient blurred fill behind it so it still fills the screen. */
+@media (orientation: portrait) {
+  .scene-stage {
+    width: 100%;
+    height: calc(100% * 9 / 16);
+  }
+  .scene-ambient {
+    display: block;
+    max-width: 100%;
+    transform: none !important;
+  }
+}
+
+/* Lightning: a quick multi-strobe illumination of the whole sky */
+@keyframes lightning-flash {
+  0% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 0.9;
+  }
+  5% {
+    opacity: 0.15;
+  }
+  8% {
+    opacity: 0.75;
+  }
+  12% {
+    opacity: 0.05;
+  }
+  15% {
+    opacity: 0.55;
+  }
+  22% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* The bolt itself: appears with the flash, then snaps out */
+@keyframes lightning-bolt {
+  0% {
+    opacity: 0;
+  }
+  2% {
+    opacity: 1;
+  }
+  9% {
+    opacity: 0.3;
+  }
+  14% {
+    opacity: 0.9;
+  }
+  20% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .cine-animated {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

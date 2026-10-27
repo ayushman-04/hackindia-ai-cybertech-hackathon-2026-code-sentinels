@@ -1,0 +1,504 @@
+export type OperationalModule =
+  | 'home'
+  | 'dashboard'
+  | 'risk-map'
+  | 'earthquake-monitor'
+  | 'risk-details'
+  | 'alerts'
+  | 'emergency-sos'
+  | 'about'
+  | 'spatial-gis-command'
+  | 'temporal-lstm-predictor'
+  | 'crowdsource-cv-verification'
+  | 'emergency-broadcast-and-dispatch'
+  | 'ml-models-pipeline'
+  | 'risk-simulator'
+  | 'hills-regions';
+
+export type NerState =
+  | 'all'
+  | 'uttarakhand'
+  | 'sikkim'
+  | 'assam'
+  | 'meghalaya'
+  | 'arunachal'
+  | 'manipur'
+  | 'nagaland'
+  | 'mizoram'
+  | 'tripura';
+
+export interface HazardZone {
+  id: string;
+  name: string;
+  subDivision: string;
+  corridor: string;
+  state: NerState;
+  slopeGradient: string;
+  soilPoreSaturation: string;
+  displacementRate: string;
+  pwpPressure: string;
+  riskStatus: 'CRITICAL RED' | 'ADVISORY ORANGE' | 'NOMINAL GREEN';
+  rfConfidence: string;
+  lstmEvac: string;
+  highwaySegment: string;
+  bridgesExposed: string;
+  populationRunout: string;
+  coords: string;
+  elevation: string;
+  top: string;
+  left: string;
+  isCritical: boolean;
+  roadBlockageStatus?: 'OPEN' | 'SINGLE_LANE' | 'BLOCKED' | 'CLEARING_IN_PROGRESS';
+  roadBlockageSource?: string;
+  roadBlockageVerified?: boolean;
+  roadBlockageUpdatedAt?: string | null;
+  assignedUnitId?: string | null;
+  estimatedClearanceTime?: string | null;
+  blockageNotes?: string | null;
+}
+
+export interface SensorNode {
+  id: string;
+  name: string;
+  type: 'piezometer' | 'inclinometer' | 'acoustic' | 'aws';
+  typeLabel: string;
+  location: string;
+  state: NerState;
+  coordinates: string;
+  battery: string;
+  uplink: string;
+  lastSync: string;
+  currentValue: string;
+  currentValueSub?: string;
+  warningThreshold: string;
+  thresholdPercentage: number;
+  status: 'critical' | 'advisory' | 'nominal' | 'torrential';
+  statusLabel: string;
+  sparkline?: number[];
+  depth?: string;
+}
+
+export interface CrowdsourceReport {
+  id: string;
+  code: string;
+  location: string;
+  subDivision: string;
+  state: NerState;
+  timeAgo: string;
+  reportedTime: string;
+  urgency: 'CRITICAL' | 'URGENT' | 'AMBER' | 'ROUTINE';
+  verifiedBy: string;
+  imageUrl: string;
+  imageAlt: string;
+  cvRisk: string;
+  cvLabel: string;
+  cvModel: string;
+  summary: string;
+  description: string;
+  coordinates: string;
+  elevation: string;
+  slope: string;
+  precipitation: string;
+  exifStatus: string;
+  audioLanguage: string;
+  audioDuration: string;
+  vernacularText: string;
+  englishTranslation: string;
+  sensorCorroboration: {
+    sensorId: string;
+    rate: string;
+    thresholdMessage: string;
+  };
+  boundingBoxes?: Array<{
+    label: string;
+    confidence: string;
+    top: string;
+    left: string;
+    width: string;
+    height: string;
+    color: 'error' | 'tertiary' | 'secondary';
+    extraInfo?: string;
+  }>;
+  hazardType?: string | null;
+  zoneId?: string | null;
+  clientReportId?: string | null;
+  capturedAt?: string | null;
+  predictedClass?: string | null;
+  classification?: string | null;
+  classificationSeverity?: string | null;
+  modelVersion?: string | null;
+  classificationSource?: string | null;
+  processedAt?: string | null;
+  isVerified?: boolean;
+  verificationStatus?: string;
+  aiClassificationStatus?: string;
+  confidence?: number | null;
+  status?: string;
+}
+
+export type RoadBlockageStatus = 'OPEN' | 'SINGLE_LANE' | 'BLOCKED' | 'CLEARING_IN_PROGRESS';
+
+export interface RoadBlockageCitizenReport {
+  id: string;
+  code: string;
+  location: string;
+  hazard_type?: string | null;
+  predicted_class?: string | null;
+  verified: boolean;
+  verification_status: string;
+  reported_time: string;
+  description: string;
+}
+
+export interface RoadBlockageRecord {
+  zone_id: string;
+  zone_name: string;
+  sub_division: string;
+  corridor: string;
+  highway_segment: string;
+  bridges_exposed: string;
+  state: string;
+  coords: string;
+  status: RoadBlockageStatus;
+  source: string;
+  verified: boolean;
+  verification_label: 'AUTHORITY_VERIFIED' | 'CITIZEN_REPORTED_UNVERIFIED';
+  updated_at?: string | null;
+  assigned_unit_id?: string | null;
+  assigned_unit_name?: string | null;
+  assigned_unit_status?: string | null;
+  estimated_clearance_time?: string | null;
+  notes?: string | null;
+  unverified_citizen_reports_count: number;
+  verified_citizen_reports_count: number;
+  citizen_reports: RoadBlockageCitizenReport[];
+}
+
+export interface TacticalUnit {
+  id: string;
+  name: string;
+  status: 'EN ROUTE' | 'ON SCENE' | 'ACTIVE' | 'DEBRIS CLEARING' | 'STANDBY';
+  statusLabel: string;
+  eta?: string;
+  personnel: number;
+  description: string;
+  destination: string;
+  satcomStatus: string;
+  equipment: string[];
+  progressPercent: number;
+  type: 'ndrf' | 'sdrf' | 'bro';
+  assignedZoneId?: string | null;
+  updatedAt?: string | null;
+}
+
+export interface ReliefShelter {
+  id: string;
+  name: string;
+  location: string;
+  state: NerState;
+  zoneId?: string | null;
+  latitude?: number;
+  longitude?: number;
+  coordinatesVerified?: boolean;
+  coordinateType?: 'exact' | 'approximate';
+  dataStatus?: 'VERIFIED' | 'DEMO' | 'UNVERIFIED';
+  coordinateSource?: string;
+  managerPhone?: string | null;
+  updatedAt?: string | null;
+  capacityCurrent: number;
+  capacityMax: number;
+  occupancyPercent: number;
+  status: 'CRITICAL' | 'STABLE' | 'AVAILABLE' | 'FULL' | 'CLOSED';
+  rationsDays: string;
+  gensetStatus: string;
+  waterSupply?: string;
+  medicalActive?: boolean;
+}
+
+export interface AuditLogEntry {
+  id: string;
+  code: string;
+  title: string;
+  timestamp: string;
+  message: string;
+  authority: string;
+  type: 'order' | 'broadcast' | 'corridor' | 'siren';
+  highlight?: boolean;
+}
+
+export type RiskLevel = 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+
+export interface PredictionRequest {
+  elevation: number;
+  slope: number;
+  aspect: number;
+  soil_id: string;
+  landcover_class: string;
+  rainfall_1d: number;
+  rainfall_3d: number;
+  rainfall_7d: number;
+  rainfall_15d: number;
+  rainfall_30d: number;
+}
+
+export interface PredictionResponse {
+  prediction: 0 | 1;
+  prediction_label: 'LANDSLIDE' | 'NO_LANDSLIDE';
+  landslide_probability: number;
+  probability_percentage?: number;
+  risk_level: RiskLevel;
+  action_code?: string;
+  input_features: PredictionRequest;
+  model?: string;
+  model_details?: {
+    terrain_probability: number | null;
+    rainfall_probability: number;
+    terrain_weight: number;
+    rainfall_weight: number;
+    terrain_records: number;
+  };
+}
+
+export interface MlPredictionInput {
+  elevation: number;
+  slope: number;
+  aspect: number;
+  soil_id: string;
+  landcover_class: string;
+  rainfall_1d: number;
+  rainfall_3d: number;
+  rainfall_7d: number;
+  rainfall_15d: number;
+  rainfall_30d: number;
+}
+
+export interface MlPredictionResult {
+  prediction: number;
+  prediction_label: 'LANDSLIDE' | 'NO_LANDSLIDE';
+  landslide_probability: number;
+  probability_percentage: number;
+  risk_level: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  action_code: string;
+  input_features: Record<string, any>;
+  model: string;
+}
+
+export interface MlMetrics {
+  test_records: number;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  roc_auc: number;
+  true_positives: number;
+  true_negatives: number;
+  false_positives: number;
+  false_negatives: number;
+}
+
+export interface MlModelComparison {
+  model: string;
+  train_accuracy: number;
+  train_roc_auc: number;
+  test_accuracy: number;
+  test_precision: number;
+  test_recall: number;
+  test_f1: number;
+  test_roc_auc: number;
+  true_positives: number;
+  true_negatives: number;
+  false_positives: number;
+  false_negatives: number;
+}
+
+export interface MlFeatureImportance {
+  feature: string;
+  display_name: string;
+  importance: number;
+  importance_percentage: number;
+}
+
+export interface DatasetSummary {
+  name: string;
+  size: string;
+  size_bytes: number;
+  record_count: number;
+  description: string;
+}
+
+export interface HistoricalLandslideEvent {
+  id: string;
+  record_id: string;
+  latitude: number;
+  longitude: number;
+  state: NerState;
+  event_date: string;
+  rainfall_3d: number;
+  slope: number;
+  elevation: number;
+  top_pct: string;
+  left_pct: string;
+  soil_id: string;
+  landcover_class: string;
+  dataset_source: string;
+  type: string;
+}
+
+export interface ZoneMlRiskEvaluation {
+  zone_id: string;
+  zone_name: string;
+  state: NerState;
+  prediction: number;
+  prediction_label: 'LANDSLIDE' | 'NO_LANDSLIDE';
+  landslide_probability: number;
+  probability_percentage: number;
+  risk_tier: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  action_code: string;
+  model_name: string;
+  feature_summary: {
+    elevation_m: number;
+    slope_deg: number;
+    soil_saturation_pct: number;
+    rainfall_3d_mm: number;
+    rainfall_30d_mm: number;
+  };
+  primary_features: {
+    name: string;
+    value: string;
+    impact: string;
+  }[];
+  historical_precedents_count: number;
+}
+
+export interface MlHeatmapPoint {
+  latitude: number;
+  longitude: number;
+  weight: number;
+  category: 'zone_susceptibility' | 'historical_ground_truth' | 'corridor_stress';
+  label: string;
+  state: NerState;
+}
+
+export interface MlHeatmapResponse {
+  count: number;
+  state_filter: string;
+  extra_rainfall_applied: number;
+  points: MlHeatmapPoint[];
+}
+
+export interface EarthquakeEvent {
+  id: string;
+  magnitude: number;
+  latitude: number;
+  longitude: number;
+  depth_km: number;
+  location: string;
+  event_time: string;
+  source: 'National Center for Seismology';
+  status: 'reviewed' | 'unreviewed' | 'unknown';
+}
+
+export interface EarthquakeResponse {
+  earthquake_data_available: boolean;
+  source_status: 'available' | 'temporarily_unavailable';
+  source: 'National Center for Seismology';
+  source_url: string;
+  last_updated?: string;
+  events: EarthquakeEvent[];
+  earthquake_trigger_score: number;
+  message: string;
+}
+
+export interface HistoricalEarthquakeEvent {
+  id: string;
+  magnitude: number;
+  latitude: number;
+  longitude: number;
+  depth_km: number;
+  location: string;
+  event_time: string;
+  source: string;
+}
+
+export interface MonthlyMetricComparison {
+  month: string;
+  historicalAvg: number;
+  current: number;
+}
+
+export interface HelplineEntry {
+  id: string;
+  name: string;
+  category: 'government' | 'local' | 'medical' | 'rescue';
+  number: string;
+  state?: string;
+  icon?: string;
+}
+
+export interface LocationRiskParams {
+  name: string;
+  locationType: 'region' | 'hill';
+  latitude: number;
+  longitude: number;
+  state?: string;
+  elevation?: number;
+  slope?: number;
+  aspect?: number;
+  soilId?: string;
+  landcoverClass?: string;
+  extraRainfall?: number;
+}
+
+export interface LocationRiskEvaluation {
+  location: {
+    name: string;
+    type: 'region' | 'hill';
+    latitude: number;
+    longitude: number;
+    state: string;
+  };
+  base_ml_probability: number;
+  seismic_adjustment: number;
+  final_risk_score: number;
+  probability_percentage: number;
+  risk_level: 'LOW' | 'MODERATE' | 'HIGH' | 'VERY_HIGH';
+  prediction: number;
+  prediction_label: 'LANDSLIDE' | 'NO_LANDSLIDE';
+  action_code: string;
+  calculation_method: string;
+  inputs: {
+    elevation_m: number;
+    slope_deg: number;
+    soil_id: string;
+    landcover_class: string;
+    rainfall: {
+      rainfall_1d_mm: number;
+      rainfall_3d_mm: number;
+      rainfall_7d_mm: number;
+      rainfall_15d_mm: number;
+      rainfall_30d_mm: number;
+      extra_rainfall_applied_mm: number;
+      source: string;
+      is_live: boolean;
+    };
+    seismic: {
+      events_in_range_500km: number;
+      nearest_event_distance_km: number | null;
+      max_magnitude: number | null;
+      seismic_trigger_score: number;
+      source: string;
+      is_live: boolean;
+    };
+  };
+  model_details?: {
+    terrain_probability?: number | null;
+    rainfall_probability?: number | null;
+    terrain_weight?: number;
+    rainfall_weight?: number;
+    seismic_alpha?: number;
+  };
+  updated_at: string;
+}
+
+
+
