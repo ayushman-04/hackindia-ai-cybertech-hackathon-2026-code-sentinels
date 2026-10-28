@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { HazardZone, OperationalModule, ReliefShelter } from '../types';
+import { HazardZone, OperationalModule, ReliefShelter, ZoneMlRiskEvaluation } from '../types';
 import { MONTHLY_HISTORICAL_DATA, RELIEF_SHELTERS } from '../data/mockData';
 import { FocusCoordinates, useMapContext } from '../context/MapContext';
 import { LandslideApi } from '../services/api';
@@ -23,6 +23,7 @@ import {
   Calendar,
   Sparkles,
   ShieldAlert,
+  Loader2,
 } from 'lucide-react';
 import { useI18n } from '../i18n/index.tsx';
 
@@ -57,6 +58,10 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
   const [hoveredMonth, setHoveredMonth] = useState<string | null>(null);
   const [reliefShelters, setReliefShelters] = useState<ReliefShelter[]>(RELIEF_SHELTERS);
 
+  const [mlRisk, setMlRisk] = useState<ZoneMlRiskEvaluation | null>(null);
+  const [mlRiskLoading, setMlRiskLoading] = useState<boolean>(true);
+  const [mlRiskError, setMlRiskError] = useState<string | null>(null);
+
   useEffect(() => {
     let active = true;
 
@@ -70,6 +75,38 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
       active = false;
     };
   }, []);
+
+  // Fetch real ML risk evaluation for selected hazard zone
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setMlRiskLoading(true);
+    setMlRiskError(null);
+
+    LandslideApi.getZoneMlRisk(selectedZone.id, 0, controller.signal)
+      .then((data) => {
+        if (!active) return;
+        setMlRisk(data);
+        setMlRiskError(null);
+      })
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (active) {
+          setMlRisk(null);
+          setMlRiskError('Real-time ML risk inference unavailable for this corridor.');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setMlRiskLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [selectedZone.id]);
 
   const isDark = theme === 'dark';
 
@@ -101,20 +138,29 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
     onNavigate('risk-map');
   };
 
-  // Calculate risk percentage numeric value from zone
-  const riskScoreNum = selectedZone.riskStatus.includes('CRITICAL')
-    ? 85
-    : selectedZone.riskStatus.includes('ADVISORY')
-    ? 68
-    : 35;
+  // Real ML risk percentage and risk tier evaluation from /api/zones/{id}/ml-risk
+  const hasLiveRisk = mlRisk !== null && typeof mlRisk.probability_percentage === 'number';
+  const riskScoreNum = hasLiveRisk ? Math.round(mlRisk.probability_percentage) : 0;
 
-  const riskLabel = selectedZone.riskStatus.includes('CRITICAL')
-    ? 'High Risk'
-    : selectedZone.riskStatus.includes('ADVISORY')
-    ? 'Moderate Risk'
-    : 'Low Risk';
+  const riskLabel = hasLiveRisk
+    ? mlRisk.risk_tier === 'VERY_HIGH'
+      ? 'Very High Risk'
+      : mlRisk.risk_tier === 'HIGH'
+      ? 'High Risk'
+      : mlRisk.risk_tier === 'MODERATE'
+      ? 'Moderate Risk'
+      : 'Low Risk'
+    : selectedZone.riskStatus.includes('CRITICAL')
+    ? 'High Risk (Baseline)'
+    : 'Moderate Risk (Baseline)';
 
-  const riskColor = selectedZone.riskStatus.includes('CRITICAL')
+  const riskColor = hasLiveRisk
+    ? mlRisk.risk_tier === 'VERY_HIGH' || mlRisk.risk_tier === 'HIGH'
+      ? '#ef4444'
+      : mlRisk.risk_tier === 'MODERATE'
+      ? '#f59e0b'
+      : '#10b981'
+    : selectedZone.riskStatus.includes('CRITICAL')
     ? '#ef4444'
     : selectedZone.riskStatus.includes('ADVISORY')
     ? '#f59e0b'
@@ -123,7 +169,9 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
   // SVG circular gauge properties
   const radius = 64;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference - (riskScoreNum / 100) * circumference;
+  const strokeDashoffset = hasLiveRisk
+    ? circumference - (riskScoreNum / 100) * circumference
+    : circumference;
 
   // Monthly dataset for the active tab
   const monthlyData = MONTHLY_HISTORICAL_DATA[activeMetricTab];
@@ -328,7 +376,13 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
                   <Activity className="w-5 h-5 text-red-500" />
                   <h2 className="text-lg font-bold">{t('riskDetails.assessment')}</h2>
                 </div>
-                <span className="text-xs text-slate-400 font-mono">{t('riskDetails.mlConfidence')} {selectedZone.rfConfidence}</span>
+                <span className="text-xs text-slate-400 font-mono">
+                  {hasLiveRisk
+                    ? `Live ML Pipeline: ${mlRisk.risk_tier} (${mlRisk.probability_percentage.toFixed(1)}%)`
+                    : mlRiskLoading
+                    ? 'Inference running...'
+                    : `${t('riskDetails.mlConfidence')} ${selectedZone.rfConfidence}`}
+                </span>
               </div>
 
               {/* Circular Gauge / Radial Meter */}
@@ -359,20 +413,34 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center text-center">
-                    <span className="text-4xl font-black tracking-tight" style={{ color: riskColor }}>
-                      {riskScoreNum}%
-                    </span>
-                    <span
-                      className={`text-xs font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${
-                        selectedZone.riskStatus.includes('CRITICAL')
-                          ? 'bg-red-500/20 text-red-500'
-                          : selectedZone.riskStatus.includes('ADVISORY')
-                          ? 'bg-amber-500/20 text-amber-500'
-                          : 'bg-emerald-500/20 text-emerald-500'
-                      }`}
-                    >
-                      {riskLabel}
-                    </span>
+                    {mlRiskLoading ? (
+                      <div className="flex flex-col items-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
+                        <span className="text-[11px] font-mono text-slate-400 mt-1">Evaluating...</span>
+                      </div>
+                    ) : mlRiskError || !hasLiveRisk ? (
+                      <div className="flex flex-col items-center px-2">
+                        <span className="text-lg font-bold font-mono text-amber-500">--%</span>
+                        <span className="text-[10px] text-slate-400 font-mono mt-0.5">Unavailable</span>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="text-4xl font-black tracking-tight" style={{ color: riskColor }}>
+                          {riskScoreNum}%
+                        </span>
+                        <span
+                          className={`text-xs font-extrabold uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${
+                            riskColor === '#ef4444'
+                              ? 'bg-red-500/20 text-red-500'
+                              : riskColor === '#f59e0b'
+                              ? 'bg-amber-500/20 text-amber-500'
+                              : 'bg-emerald-500/20 text-emerald-500'
+                          }`}
+                        >
+                          {riskLabel}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
                 <p
@@ -380,7 +448,11 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
                     isDark ? 'text-slate-400' : 'text-slate-500'
                   }`}
                 >
-                  Aggregated multi-factor score derived from RF Classifier, InSAR kinematics, and catchment rainfall index.
+                  {hasLiveRisk
+                    ? `${mlRisk.model_name} (Action Code: ${mlRisk.action_code})`
+                    : mlRiskError
+                    ? mlRiskError
+                    : 'Aggregated multi-factor score derived from Random Forest classifier & live corridor telemetry.'}
                 </p>
               </div>
 
@@ -389,32 +461,51 @@ export const TerraRiskDetails: React.FC<TerraRiskDetailsProps> = ({
                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
                   {t('riskDetails.whyRiskHigh')}
                 </h3>
-                <ul className="space-y-2.5 text-xs sm:text-sm">
-                  <li className="flex items-start gap-2.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0" />
-                    <span>
-                      <strong className="text-red-500">Intense 48h Precipitation:</strong> Cumulative rainfall at {selectedZone.name} reached critical trigger levels (120mm+ recorded).
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0" />
-                    <span>
-                      <strong className="text-amber-500">Steep Slope Gradient:</strong> Measured at {selectedZone.slopeGradient}, exceeding the angle of repose for loose regolith.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0" />
-                    <span>
-                      <strong className="text-amber-500">Extreme Soil Saturation:</strong> Soil pore water pressure reached {selectedZone.pwpPressure} ({selectedZone.soilPoreSaturation} saturated), eliminating cohesive shear resistance.
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0" />
-                    <span>
-                      <strong className="text-blue-500">Active Geomorphic Creep:</strong> Sub-surface displacement rate is currently accelerating at {selectedZone.displacementRate}.
-                    </span>
-                  </li>
-                </ul>
+                {hasLiveRisk && mlRisk.primary_features && mlRisk.primary_features.length > 0 ? (
+                  <ul className="space-y-2.5 text-xs sm:text-sm">
+                    {mlRisk.primary_features.map((feat, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5">
+                        <span
+                          className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                            idx === 0
+                              ? 'bg-red-500'
+                              : idx === 1
+                              ? 'bg-amber-500'
+                              : idx === 2
+                              ? 'bg-cyan-500'
+                              : 'bg-blue-500'
+                          }`}
+                        />
+                        <span>
+                          <strong className="text-slate-200 dark:text-white">{feat.name}:</strong>{' '}
+                          <span className="font-mono text-cyan-400">{feat.value}</span> —{' '}
+                          <span className="text-slate-400">{feat.impact}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <ul className="space-y-2.5 text-xs sm:text-sm">
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                      <span>
+                        <strong className="text-red-500">Elevated Corridor Saturation:</strong> Soil pore saturation measured at {selectedZone.soilPoreSaturation}.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 mt-1.5 shrink-0" />
+                      <span>
+                        <strong className="text-amber-500">Steep Slope Gradient:</strong> Measured at {selectedZone.slopeGradient}, exceeding critical stability threshold.
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shrink-0" />
+                      <span>
+                        <strong className="text-blue-500">Active Geomorphic Creep:</strong> Sub-surface displacement rate is currently at {selectedZone.displacementRate}.
+                      </span>
+                    </li>
+                  </ul>
+                )}
               </div>
             </div>
 

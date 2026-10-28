@@ -20,8 +20,22 @@ import {
   Activity,
   ArrowUpRight,
   Radio,
+  Loader2,
 } from 'lucide-react';
 import { useI18n } from '../i18n/index.tsx';
+import { LandslideApi, LiveWeather } from '../services/api';
+
+function parseCoordinates(coordStr?: string): { latitude?: number; longitude?: number } {
+  if (!coordStr) return {};
+  const cleaned = coordStr.replace(/[°NSEW]/gi, '').trim();
+  const parts = cleaned.split(',');
+  if (parts.length >= 2) {
+    const lat = parseFloat(parts[0].trim());
+    const lon = parseFloat(parts[1].trim());
+    if (!isNaN(lat) && !isNaN(lon)) return { latitude: lat, longitude: lon };
+  }
+  return {};
+}
 
 interface TerraDashboardProps {
   selectedZone: HazardZone;
@@ -74,10 +88,106 @@ export const TerraDashboard: React.FC<TerraDashboardProps> = ({
     setCurrentImageIndex((prev) => (prev - 1 + LIVE_VIEW_IMAGES.length) % LIVE_VIEW_IMAGES.length);
   };
 
+  const [weather, setWeather] = useState<LiveWeather | null>(null);
+  const [weatherLoading, setWeatherLoading] = useState<boolean>(true);
+  const [weatherError, setWeatherError] = useState<string | null>(null);
+  const [warningWeather, setWarningWeather] = useState<Record<string, LiveWeather>>({});
+  const [warningWeatherLoading, setWarningWeatherLoading] = useState<boolean>(false);
+
+  // Fetch live meteorological telemetry for selected zone
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setWeatherLoading(true);
+    setWeatherError(null);
+
+    const coords = parseCoordinates(selectedZone.coords);
+
+    LandslideApi.getLiveWeather(
+      {
+        state: selectedZone.state,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        regionName: selectedZone.name,
+      },
+      controller.signal
+    )
+      .then((data) => {
+        if (!active) return;
+        if (!data || !data.is_live_feed) {
+          setWeather(null);
+          setWeatherError('Telemetry unavailable');
+        } else {
+          setWeather(data);
+          setWeatherError(null);
+        }
+      })
+      .catch((err) => {
+        if (err instanceof DOMException && err.name === 'AbortError') return;
+        if (active) {
+          setWeather(null);
+          setWeatherError('Weather feed unavailable');
+        }
+      })
+      .finally(() => {
+        if (active) {
+          setWeatherLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [selectedZone.id, selectedZone.state, selectedZone.coords, selectedZone.name]);
+
   // High & Medium warning zones
   const warningZones = zones.filter(
     (z) => z.riskStatus === 'CRITICAL RED' || z.riskStatus === 'ADVISORY ORANGE'
   );
+
+  // Fetch live weather for warning zones
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setWarningWeatherLoading(true);
+
+    const fetchWarningWeather = async () => {
+      const results: Record<string, LiveWeather> = {};
+      await Promise.all(
+        warningZones.map(async (zone) => {
+          try {
+            const coords = parseCoordinates(zone.coords);
+            const data = await LandslideApi.getLiveWeather(
+              {
+                state: zone.state,
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                regionName: zone.name,
+              },
+              controller.signal
+            );
+            if (data && data.is_live_feed) {
+              results[zone.id] = data;
+            }
+          } catch {
+            // Zone telemetry unavailable
+          }
+        })
+      );
+      if (active) {
+        setWarningWeather(results);
+        setWarningWeatherLoading(false);
+      }
+    };
+
+    fetchWarningWeather();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [zones]);
 
   return (
     <div className="space-y-6 pb-16 font-sans">
@@ -193,7 +303,7 @@ export const TerraDashboard: React.FC<TerraDashboardProps> = ({
                 </span>
               </div>
 
-              {/* Metric 2: 24h Rainfall */}
+              {/* Metric 2: Live Rainfall */}
               <div
                 className={`p-3 rounded-xl border ${
                   theme === 'light'
@@ -201,13 +311,38 @@ export const TerraDashboard: React.FC<TerraDashboardProps> = ({
                     : 'bg-[#122131] border-[#1c2b3c]'
                 }`}
               >
-                <span className="flex items-center gap-1 text-[11px] font-mono text-slate-400">
-                  <CloudRain className="w-3.5 h-3.5 text-cyan-400" />
-                  {t('dashboard.rainfall24h')}
-                </span>
-                <span className="text-lg sm:text-xl font-bold font-mono text-cyan-400 block mt-1">
-                  120 mm
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-[11px] font-mono text-slate-400">
+                    <CloudRain className="w-3.5 h-3.5 text-cyan-400" />
+                    72H ANTECEDENT RAIN
+                  </span>
+                  {weatherLoading && (
+                    <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                  )}
+                </div>
+                {weatherLoading ? (
+                  <span className="text-sm font-bold font-mono text-slate-400 block mt-1">
+                    Loading...
+                  </span>
+                ) : weatherError || !weather || !weather.is_live_feed ? (
+                  <div className="mt-1">
+                    <span className="text-sm font-bold font-mono text-amber-500 block">
+                      Unavailable
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-mono block">
+                      {weatherError || 'Feed offline'}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="mt-1">
+                    <span className="text-lg sm:text-xl font-bold font-mono text-cyan-400 block">
+                      {weather.antecedent_72h_rainfall_mm.toFixed(1)} mm
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-mono block">
+                      Rate: {weather.current_rainfall_mm_hr.toFixed(1)} mm/h
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Metric 3: Soil Moisture */}
@@ -458,8 +593,21 @@ export const TerraDashboard: React.FC<TerraDashboardProps> = ({
               {/* Data metrics */}
               <div className="grid grid-cols-2 gap-2 mt-3 text-xs font-mono">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">{t('dashboard.rain24h')}</span>
-                  <span className="font-bold text-cyan-500">120 mm</span>
+                  <span className="text-slate-400 block text-[10px]">72H RAINFALL</span>
+                  {warningWeatherLoading && !warningWeather[zone.id] ? (
+                    <span className="text-slate-400 font-mono text-[11px]">Loading...</span>
+                  ) : warningWeather[zone.id]?.is_live_feed ? (
+                    <div>
+                      <span className="font-bold text-cyan-500">
+                        {warningWeather[zone.id].antecedent_72h_rainfall_mm.toFixed(1)} mm
+                      </span>
+                      <span className="text-[9px] text-slate-400 block font-normal">
+                        Rate: {warningWeather[zone.id].current_rainfall_mm_hr.toFixed(1)} mm/h
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-amber-500 font-mono text-[11px]">Unavailable</span>
+                  )}
                 </div>
                 <div>
                   <span className="text-slate-400 block text-[10px]">SOIL MOISTURE</span>
