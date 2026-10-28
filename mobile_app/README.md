@@ -1,4 +1,4 @@
-# TerraGuard mobile app
+# Slope Signal mobile app
 
 This Flutter companion app is migrated into the LandslideGuard repository.
 

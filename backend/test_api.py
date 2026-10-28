@@ -1,5 +1,5 @@
 """
-Test Suite for LandslideGuard Backend API
+Test Suite for Slope Signal Backend API
 """
 
 import sys
@@ -95,15 +95,15 @@ def test_chatbot_language_support():
 
 def test_chatbot_all_language_responses():
     language_markers = {
-        "en": "TerraGuard Assistant can analyze",
-        "hi": "TerraGuard सहायक",
-        "as": "TerraGuard সহায়কে",
-        "bn": "TerraGuard সহায়ক",
-        "brx": "TerraGuard सहायक",
-        "ks": "TerraGuard madadgar",
-        "mni": "TerraGuard assistant-na",
-        "lus": "TerraGuard assistant chuan",
-        "ne": "TerraGuard सहायकले",
+        "en": "Slope Signal Assistant can analyze",
+        "hi": "Slope Signal सहायक",
+        "as": "Slope Signal সহায়কে",
+        "bn": "Slope Signal সহায়ক",
+        "brx": "Slope Signal सहायक",
+        "ks": "Slope Signal madadgar",
+        "mni": "Slope Signal assistant-na",
+        "lus": "Slope Signal assistant chuan",
+        "ne": "Slope Signal सहायकले",
     }
     english_reply = None
     for language, marker in language_markers.items():
@@ -564,7 +564,7 @@ def test_chatbot():
     data = res.json()
     assert "Teesta Basin" in data["reply"]
     assert "final_risk_score" in data["reply"] or "Score" in data["reply"]
-    assert data["source"] in ["terraguard-live-ml", "gemini-1.5-flash"]
+    assert data["source"] in ["slope-signal-live-ml", "terraguard-live-ml", "gemini-1.5-flash"]
     assert data["action"]["type"] == "SELECT_REGION"
 
     # Test offline FAQ answer
@@ -1158,4 +1158,4 @@ if __name__ == "__main__":
     test_phase_2b_road_blockages_crud_and_citizen_vs_authority_separation()
     test_phase_2b_shelter_persistence_and_safe_occupancy_updates()
     test_phase_2b_tactical_dispatch_and_simulation_flags()
-    print("\nAll 34 Backend API tests passed successfully!\n")
+    print("\nAll 34 Slope Signal Backend API tests passed successfully!\n")

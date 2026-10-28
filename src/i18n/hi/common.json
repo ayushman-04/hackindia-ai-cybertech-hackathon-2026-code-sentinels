@@ -166,18 +166,18 @@
     "soilSaturation": "मिट्टी की नमी संतृप्ति"
   },
   "chatbot": {
-    "title": "TerraGuard AI चैट",
-    "openLabel": "TerraGuard AI खोलें",
-    "minimize": "TerraGuard AI को छोटा करें",
-    "close": "TerraGuard AI बंद करें",
+    "title": "Slope Signal AI चैट",
+    "openLabel": "Slope Signal AI खोलें",
+    "minimize": "Slope Signal AI को छोटा करें",
+    "close": "Slope Signal AI बंद करें",
     "returnHome": "चैट होम पर लौटें",
     "goBack": "वापस जाएँ",
     "send": "भेजें",
     "clear": "साफ़ करें",
     "languageLabel": "चैटबॉट भाषा",
-    "placeholder": "TerraGuard सहायक से पूछें...",
-    "inputLabel": "TerraGuard AI से पूछें",
-    "welcomeIntro": "नमस्कार! मैं TerraGuard AI हूँ",
+    "placeholder": "Slope Signal सहायक से पूछें...",
+    "inputLabel": "Slope Signal AI से पूछें",
+    "welcomeIntro": "नमस्कार! मैं Slope Signal AI हूँ",
     "welcomeDescription": "मैं उत्तर-पूर्व क्षेत्र और हिमालयी क्षेत्रों में भूस्खलन जोखिम की जाँच में आपकी मदद कर सकता हूँ।",
     "hillsButton": "पहाड़ और पर्वत",
     "regionsButton": "क्षेत्र / स्थान",
@@ -185,7 +185,7 @@
     "regionsPrompt": "निगरानी किए गए क्षेत्रों और स्थानों का राज्य चुनें।",
     "hillsPrompt": "पहाड़ी एवं पर्वतीय क्षेत्रों का राज्य चुनें।",
     "stateLabel": "राज्य",
-    "analyzing": "TerraGuard विश्लेषण कर रहा है",
+    "analyzing": "Slope Signal विश्लेषण कर रहा है",
     "openRiskMap": "जोखिम मानचित्र खोलें",
     "viewRiskDetails": "जोखिम विवरण देखें",
     "checkAnotherRegion": "अलग क्षेत्र देखें",
@@ -270,7 +270,7 @@
     "seismicDisclaimer": "अस्वीकरण: भूकंपीय ट्रिगर NCS फ़ीड से संभावित भू-गति परामर्श का संकेत देता है। यह एक स्वतंत्र भू-भौतिकीय पैरामीटर है और प्रत्यक्ष भूस्खलन की भविष्यवाणी नहीं है।"
   },
   "about": {
-    "title": "TerraGuard प्रणाली के बारे में",
+    "title": "Slope Signal प्रणाली के बारे में",
     "subtitle": "महत्वपूर्ण हिमालयी गलियारों के लिए अगली पीढ़ी का AI और GIS भूस्खलन पूर्व चेतावनी प्रणाली",
     "multiSourceTitle": "बहु-स्रोत पृथ्वी डेटा",
     "multiSourceDesc": "Sentinel-1 InSAR सिंथेटिक एपर्चर रडार, NASA SRTM 30m डिजिटल एलिवेशन मॉडल, IMD ग्रिडेड बारिश टेलीमेट्री और रियल-टाइम पिज़ोमेट्रिक मृदा छिद्र सेंसर को निर्बाध रूप से एकीकृत करता है।",
@@ -290,7 +290,7 @@
     "tacticalCapDesc": "CAP आपातकालीन प्रसारण ट्रिगर करें और आश्रयों में राहत काफिले भेजें।",
     "crowdsourceCvTitle": "क्राउडसोर्स CV इनटेक",
     "crowdsourceCvDesc": "स्वचालित कंप्यूटर विज़न रॉकफॉल सत्यापन के साथ नागरिक फोटो सबमिशन।",
-    "footerCompliant": "TerraGuard v2.4 Enterprise • भारतीय भूवैज्ञानिक सर्वेक्षण (GSI) और राष्ट्रीय आपदा प्रबंधन प्राधिकरण (NDMA) अनुपालन",
-    "footerBuiltWith": "React 18, Vite, Tailwind CSS, Leaflet GIS, FastAPI और Scikit-Learn के साथ निर्मित"
+    "footerCompliant": "Slope Signal v2.4 Enterprise • भारतीय भूवैज्ञानिक सर्वेक्षण (GSI) और राष्ट्रीय आपदा प्रबंधन प्राधिकरण (NDMA) अनुपालन",
+    "footerBuiltWith": "React 19, Vite, Tailwind CSS, Leaflet GIS, FastAPI और Scikit-Learn के साथ निर्मित"
   }
 }

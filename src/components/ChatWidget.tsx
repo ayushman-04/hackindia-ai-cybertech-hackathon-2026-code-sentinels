@@ -58,7 +58,7 @@ const formatLocationRisk = (name: string, evaluation: LocationRiskEvaluation) =>
       : `${latitude}, ${longitude}`;
 
   return (
-    `TerraGuard Risk Map analysis: **${name}**\n\n` +
+    `Slope Signal Risk Map analysis: **${name}**\n\n` +
     `• **Overall risk:** **${value(evaluation.final_risk_score, ' / 100')}** (${evaluation.risk_level || 'Unavailable'})\n` +
     `• **Base ML probability:** ${baseProbabilityText}\n` +
     `• **3-day rainfall:** ${value(evaluation.inputs?.rainfall?.rainfall_3d_mm, ' mm')}\n` +
@@ -66,7 +66,7 @@ const formatLocationRisk = (name: string, evaluation: LocationRiskEvaluation) =>
     `• **Elevation:** ${value(evaluation.inputs?.elevation_m, ' m')}\n` +
     `• **Coordinates:** ${coordinatesText}\n` +
     `• **Seismic trigger score:** ${value(evaluation.inputs?.seismic?.seismic_trigger_score)}\n\n` +
-    'TerraGuard is decision support, not an official warning or evacuation order. Follow SDMA/NDMA and local authority instructions.'
+    'Slope Signal is decision support, not an official warning or evacuation order. Follow SDMA/NDMA and local authority instructions.'
   );
 };
 
@@ -169,7 +169,7 @@ const RiskCard: React.FC<{ name: string; evaluation: LocationRiskEvaluation; isD
           isDark ? 'border-slate-800 text-slate-500' : 'border-slate-200 text-slate-500'
         }`}
       >
-        <Database className="h-3 w-3" /> TerraGuard live location-risk evaluation
+        <Database className="h-3 w-3" /> Slope Signallive location-risk evaluation
       </div>
     </div>
   );
@@ -238,156 +238,156 @@ const CHATBOT_COPY: Record<
   }
 > = {
   en: {
-    welcome: 'Hello! Welcome to TerraGuard AI. 🌿\n\nPlease choose your chatbot language.',
-    returningWelcome: "Great! You're ready to explore TerraGuard. What would you like to explore?",
-    error: '⚠️ Failed to connect to TerraGuard AI Assistant. Please check your network.',
+    welcome: 'Hello! Welcome to Slope Signal. 🌿\n\nPlease choose your chatbot language.',
+    returningWelcome: "Great! You're ready to explore Slope Signal. What would you like to explore?",
+    error: '⚠️ Failed to connect to Slope Signal Assistant. Please check your network.',
     hillsPrompt: "Great! Let's explore the hills and mountain regions. Which state would you like to explore?",
     regionsPrompt: "Great! Let's explore regions and places. Which state would you like to explore?",
     regionPrompt: (state) => `${state} selected. Which region or place would you like to explore?`,
     hillPrompt: (state) => `${state} selected. Which hill or mountain region would you like to explore?`,
     unavailable: (name) =>
       `I don't have verified coordinates for ${name}, so a location-specific risk evaluation isn't available yet.`,
-    evaluationError: 'Unable to evaluate this location through the TerraGuard location-risk service.',
+    evaluationError: 'Unable to evaluate this location through the Slope Signal location-risk service.',
   },
   hi: {
-    welcome: 'नमस्ते! TerraGuard AI में आपका स्वागत है। 🌿\n\nकृपया अपनी चैटबॉट भाषा चुनें।',
+    welcome: 'नमस्ते! Slope Signal में आपका स्वागत है। 🌿\n\nकृपया अपनी चैटबॉट भाषा चुनें।',
     returningWelcome: 'आज मैं आपकी कैसे मदद कर सकता हूँ?',
-    error: '⚠️ TerraGuard AI Assistant से कनेक्ट नहीं हो सका। कृपया अपना नेटवर्क जांचें।',
+    error: '⚠️ Slope Signal Assistant से कनेक्ट नहीं हो सका। कृपया अपना नेटवर्क जांचें।',
     hillsPrompt: 'वर्तमान जोखिम जांचने के लिए कोई पहाड़ी या पर्वत चुनें।',
     regionsPrompt: 'निगरानी किए गए क्षेत्रों और स्थानों को देखने के लिए राज्य चुनें।',
     regionPrompt: (state) => `${state} में निगरानी किया गया क्षेत्र या स्थान चुनें।`,
     hillPrompt: (state) => `${state} में कोई पहाड़ी या पर्वत चुनें।`,
     unavailable: (name) =>
       `${name} के सत्यापित निर्देशांक उपलब्ध नहीं हैं, इसलिए स्थान-विशिष्ट जोखिम मूल्यांकन अभी उपलब्ध नहीं है।`,
-    evaluationError: 'TerraGuard स्थान-जोखिम सेवा से इस स्थान का मूल्यांकन नहीं हो सका।',
+    evaluationError: 'Slope Signalस्थान-जोखिम सेवा से इस स्थान का मूल्यांकन नहीं हो सका।',
   },
   as: {
     welcome:
-      'নমস্কাৰ! মই TerraGuard AI 👋\n\nউত্তৰ-পূব অঞ্চল আৰু হিমালয়ৰ ভূমিস্খলন বিপদ বুজিবলৈ মই সহায় কৰিব পাৰোঁ।\n\nআপুনি কি চাব বিচাৰে?',
-    returningWelcome: 'TerraGuard AI-লৈ পুনৰ স্বাগতম 👋\n\nআপুনি কি চাব বিচাৰে?',
-    error: '⚠️ TerraGuard AI Assistant-ৰ সৈতে সংযোগ নহ’ল। আপোনাৰ নেটৱৰ্ক পৰীক্ষা কৰক।',
+      'নমস্কাৰ! মই Slope Signal👋\n\nউত্তৰ-পূব অঞ্চল আৰু হিমালয়ৰ ভূমিস্খলন বিপদ বুজিবলৈ মই সহায় কৰিব পাৰোঁ।\n\nআপুনি কি চাব বিচাৰে?',
+    returningWelcome: 'Slope SignalAI-লৈ পুনৰ স্বাগতম 👋\n\nআপুনি কি চাব বিচাৰে?',
+    error: '⚠️ Slope SignalAssistant-ৰ সৈতে সংযোগ নহ’ল। আপোনাৰ নেটৱৰ্ক পৰীক্ষা কৰক।',
     hillsPrompt: 'বৰ্তমান বিপদ চাবলৈ এখন পাহাৰ বা পৰ্বত বাছনি কৰক।',
     regionsPrompt: 'নিৰীক্ষণ কৰা অঞ্চল আৰু ঠাই চাবলৈ ৰাজ্য বাছনি কৰক।',
     regionPrompt: (state) => `${state}-ৰ এটা নিৰীক্ষণ কৰা অঞ্চল বা ঠাই বাছনি কৰক।`,
     hillPrompt: (state) => `${state}-ৰ এখন পাহাৰ বা পৰ্বত বাছনি কৰক।`,
     unavailable: (name) =>
       `${name}-ৰ সত্যাপিত স্থানাংক নাই, সেয়ে স্থান-নিৰ্দিষ্ট বিপদ মূল্যায়ন এতিয়া উপলব্ধ নহয়।`,
-    evaluationError: 'TerraGuard স্থান-বিপদ সেৱাৰ জৰিয়তে এই ঠাইটো মূল্যায়ন কৰিব পৰা নগ’ল।',
+    evaluationError: 'Slope Signalস্থান-বিপদ সেৱাৰ জৰিয়তে এই ঠাইটো মূল্যায়ন কৰিব পৰা নগ’ল।',
   },
   bn: {
     welcome:
-      'নমস্কার! আমি TerraGuard AI 👋\n\nউত্তর-পূর্ব অঞ্চল ও হিমালয় এলাকায় ভূমিধসের ঝুঁকি বুঝতে আমি সাহায্য করতে পারি।\n\nআপনি কী দেখতে চান?',
-    returningWelcome: 'TerraGuard AI-তে আবার স্বাগতম 👋\n\nআপনি কী দেখতে চান?',
-    error: '⚠️ TerraGuard AI Assistant-এর সঙ্গে সংযোগ করা যায়নি। আপনার নেটওয়ার্ক পরীক্ষা করুন।',
+      'নমস্কার! আমি Slope Signal👋\n\nউত্তর-পূর্ব অঞ্চল ও হিমালয় এলাকায় ভূমিধসের ঝুঁকি বুঝতে আমি সাহায্য করতে পারি।\n\nআপনি কী দেখতে চান?',
+    returningWelcome: 'Slope SignalAI-তে আবার স্বাগতম 👋\n\nআপনি কী দেখতে চান?',
+    error: '⚠️ Slope SignalAssistant-এর সঙ্গে সংযোগ করা যায়নি। আপনার নেটওয়ার্ক পরীক্ষা করুন।',
     hillsPrompt: 'বর্তমান ঝুঁকি দেখতে একটি পাহাড় বা পর্বত বেছে নিন।',
     regionsPrompt: 'পর্যবেক্ষিত অঞ্চল ও স্থান দেখতে একটি রাজ্য বেছে নিন।',
     regionPrompt: (state) => `${state}-এর একটি পর্যবেক্ষিত অঞ্চল বা স্থান বেছে নিন।`,
     hillPrompt: (state) => `${state}-এর একটি পাহাড় বা পর্বত বেছে নিন।`,
     unavailable: (name) =>
       `${name}-এর যাচাই করা স্থানাঙ্ক নেই, তাই স্থান-নির্দিষ্ট ঝুঁকি মূল্যায়ন এখন উপলব্ধ নয়।`,
-    evaluationError: 'TerraGuard স্থানীয় ঝুঁকি পরিষেবার মাধ্যমে এই স্থানটি মূল্যায়ন করা যায়নি।',
+    evaluationError: 'Slope Signalস্থানীয় ঝুঁকি পরিষেবার মাধ্যমে এই স্থানটি মূল্যায়ন করা যায়নি।',
   },
   brx: {
     welcome:
-      'सुबुं! आं TerraGuard AI 👋\n\nआं उत्तर-पूर्व आरो हिमालयनि लैंडस्लाइड जोखोम नायनो मदद खालामनो हायो।\n\nनों मा नायनो लुबैयो?',
-    returningWelcome: 'TerraGuard AI-आव फिन स्वागतम् 👋\n\nनों मा नायनो लुबैयो?',
-    error: '⚠️ TerraGuard AI Assistant जों सोमोन्दो खालामनो हायाखै। नोंनि नेटवार्क नाय।',
+      'सुबुं! आं Slope Signal👋\n\nआं उत्तर-पूर्व आरो हिमालयनि लैंडस्लाइड जोखोम नायनो मदद खालामनो हायो।\n\nनों मा नायनो लुबैयो?',
+    returningWelcome: 'Slope SignalAI-आव फिन स्वागतम् 👋\n\nनों मा नायनो लुबैयो?',
+    error: '⚠️ Slope SignalAssistant जों सोमोन्दो खालामनो हायाखै। नोंनि नेटवार्क नाय।',
     hillsPrompt: 'दानाय जोखोम नायनो डोंगर एबा पहार बासिख।',
     regionsPrompt: 'नायगिरि जायगा नायनो राज्य बासिख।',
     regionPrompt: (state) => `${state}-आव नायगिरि जायगा बासिख।`,
     hillPrompt: (state) => `${state}-आव डोंगर एबा पहार बासिख।`,
     unavailable: (name) => `${name}-नि जांच जायगा नङा, बेखायनो जायगानि जोखोम मूल्यांकन दंनाय नङा।`,
-    evaluationError: 'TerraGuard जायगा-जोखोम सेवादों बे जायगाखौ मूल्यांकन खालामनो हायाखै।',
+    evaluationError: 'Slope Signalजायगा-जोखोम सेवादों बे जायगाखौ मूल्यांकन खालामनो हायाखै।',
   },
   ks: {
     welcome:
-      'Khublei! Nga dei TerraGuard AI 👋\n\nNga lah ban iarap ia phi ban sngewthuh ia ka jingma landslide ha North Eastern Region bad Himalayan areas.\n\nKaei kaba phi kwah ban peit?',
-    returningWelcome: 'Pdiang biang sha TerraGuard AI 👋\n\nKaei kaba phi kwah ban peit?',
-    error: '⚠️ Ym lah ban pyniasoh bad TerraGuard AI Assistant. Peit ia ka network jong phi.',
+      'Khublei! Nga dei Slope Signal👋\n\nNga lah ban iarap ia phi ban sngewthuh ia ka jingma landslide ha North Eastern Region bad Himalayan areas.\n\nKaei kaba phi kwah ban peit?',
+    returningWelcome: 'Pdiang biang sha Slope Signal👋\n\nKaei kaba phi kwah ban peit?',
+    error: '⚠️ Ym lah ban pyniasoh bad Slope SignalAssistant. Peit ia ka network jong phi.',
     hillsPrompt: 'Jied ia u lum ne u bynta lum ban peit ia ka jingma mynta.',
     regionsPrompt: 'Jied ia ka jylla ban peit ia ki jaka ba peitngor.',
     regionPrompt: (state) => `Jied ia ka jaka ba peitngor ha ${state}.`,
     hillPrompt: (state) => `Jied ia u lum ha ${state}.`,
     unavailable: (name) =>
       'Ym don ki coordinate ba la pynshisha na ka bynta ' + name + ', kumta ym pat lah ban ioh ia ka jingbishar jingma jong ka jaka.',
-    evaluationError: 'Ym lah ban bishar ia kane ka jaka lyngba ka TerraGuard location-risk service.',
+    evaluationError: 'Ym lah ban bishar ia kane ka jaka lyngba ka Slope Signallocation-risk service.',
   },
   mni: {
     welcome:
-      'Khurum! Ei TerraGuard AI 👋\n\nNorth Eastern Region amasung Himalayan area-singda landslide risk thajaduna ei mapung phangjari.\n\nNangna kari thajaba pammi?',
-    returningWelcome: 'TerraGuard AI-da amuk humar swagat 👋\n\nNangna kari thajaba pammi?',
-    error: '⚠️ TerraGuard AI Assistant-ga connect touba ngamde. Nanggi network yeng-u.',
+      'Khurum! Ei Slope Signal👋\n\nNorth Eastern Region amasung Himalayan area-singda landslide risk thajaduna ei mapung phangjari.\n\nNangna kari thajaba pammi?',
+    returningWelcome: 'Slope SignalAI-da amuk humar swagat 👋\n\nNangna kari thajaba pammi?',
+    error: '⚠️ Slope SignalAssistant-ga connect touba ngamde. Nanggi network yeng-u.',
     hillsPrompt: 'Houjik-gi risk yengnanaba hill nattraga mountain ama khan-u.',
     regionsPrompt: 'Monitored region amasung place yengnanaba state ama khan-u.',
     regionPrompt: (state) => `${state}-da monitored region nattraga place ama khan-u.`,
     hillPrompt: (state) => `${state}-da hill nattraga mountain ama khan-u.`,
     unavailable: (name) =>
       `${name}-gi verified coordinates phangde, maram aduna location-specific risk evaluation houjik available nattre.`,
-    evaluationError: 'TerraGuard location-risk service-na madugi evaluation touba ngamde.',
+    evaluationError: 'Slope Signallocation-risk service-na madugi evaluation touba ngamde.',
   },
   lus: {
     welcome:
-      'Chibai! TerraGuard AI ka ni e 👋\n\nNorth Eastern Region leh Himalaya hmunah landslide hlauhawm hrethiam turin ka pui thei.\n\nEng nge i en duh?',
-    returningWelcome: 'TerraGuard AI-ah lo kir leh rawh 👋\n\nEng nge i en duh?',
-    error: '⚠️ TerraGuard AI Assistant nen inbiakpawh theih lo. Network i en rawh.',
+      'Chibai! Slope Signalka ni e 👋\n\nNorth Eastern Region leh Himalaya hmunah landslide hlauhawm hrethiam turin ka pui thei.\n\nEng nge i en duh?',
+    returningWelcome: 'Slope SignalAI-ah lo kir leh rawh 👋\n\nEng nge i en duh?',
+    error: '⚠️ Slope SignalAssistant nen inbiakpawh theih lo. Network i en rawh.',
     hillsPrompt: 'Tunah risk en turin tlang emaw tlangpui emaw thlang rawh.',
     regionsPrompt: 'Region leh hmunte en turin state thlang rawh.',
     regionPrompt: (state) => `${state}-ah hmun thlanga en rawh.`,
     hillPrompt: (state) => `${state}-ah tlang emaw tlangpui emaw thlang rawh.`,
     unavailable: (name) =>
       `${name} tana coordinates dik tak a awm lo, chuvangin location-risk evaluation tunah a awm lo.`,
-    evaluationError: 'TerraGuard location-risk service hmangin he hmun hi zirchiang theih a ni lo.',
+    evaluationError: 'Slope Signallocation-risk service hmangin he hmun hi zirchiang theih a ni lo.',
   },
   ne: {
     welcome:
-      'नमस्ते! म TerraGuard AI हुँ 👋\n\nम उत्तर-पूर्वी क्षेत्र र हिमाली भूभागमा पहिरोको जोखिम बुझ्न सहयोग गर्न सक्छु।\n\nतपाईं के हेर्न चाहनुहुन्छ?',
-    returningWelcome: 'TerraGuard AI मा पुनः स्वागत छ 👋\n\nतपाईं के हेर्न चाहनुहुन्छ?',
-    error: '⚠️ TerraGuard AI Assistant सँग जडान हुन सकेन। कृपया आफ्नो नेटवर्क जाँच गर्नुहोस्।',
+      'नमस्ते! म Slope Signalहुँ 👋\n\nम उत्तर-पूर्वी क्षेत्र र हिमाली भूभागमा पहिरोको जोखिम बुझ्न सहयोग गर्न सक्छु।\n\nतपाईं के हेर्न चाहनुहुन्छ?',
+    returningWelcome: 'Slope Signalमा पुनः स्वागत छ 👋\n\nतपाईं के हेर्न चाहनुहुन्छ?',
+    error: '⚠️ Slope SignalAssistant सँग जडान हुन सकेन। कृपया आफ्नो नेटवर्क जाँच गर्नुहोस्।',
     hillsPrompt: 'हालको जोखिम जाँच्न पहाड वा पर्वत छान्नुहोस्।',
     regionsPrompt: 'निगरानी गरिएका क्षेत्र र स्थान हेर्न राज्य छान्नुहोस्।',
     regionPrompt: (state) => `${state} मा निगरानी गरिएको क्षेत्र वा स्थान छान्नुहोस्।`,
     hillPrompt: (state) => `${state} मा पहाड वा पर्वत छान्नुहोस्।`,
     unavailable: (name) =>
       `${name} का प्रमाणित निर्देशाङ्क उपलब्ध छैनन्, त्यसैले स्थान-विशिष्ट जोखिम मूल्याङ्कन अहिले उपलब्ध छैन।`,
-    evaluationError: 'TerraGuard स्थान-जोखिम सेवाबाट यस स्थानको मूल्याङ्कन गर्न सकिएन।',
+    evaluationError: 'Slope Signalस्थान-जोखिम सेवाबाट यस स्थानको मूल्याङ्कन गर्न सकिएन।',
   },
 };
 
 const CHATBOT_EXIT_COPY: Record<ChatbotLanguage, { farewell: string; chooseLanguage: string }> = {
   en: {
-    farewell: 'Thank you for using TerraGuard AI. Have a safe day! 🌿',
+    farewell: 'Thank you for using Slope SignalAI. Have a safe day! 🌿',
     chooseLanguage: 'Choose your chatbot language',
   },
   hi: {
-    farewell: 'TerraGuard AI का उपयोग करने के लिए धन्यवाद। आपका दिन सुरक्षित रहे! 🌿',
+    farewell: 'Slope Signalका उपयोग करने के लिए धन्यवाद। आपका दिन सुरक्षित रहे! 🌿',
     chooseLanguage: 'अपनी चैटबॉट भाषा चुनें',
   },
   as: {
-    farewell: 'TerraGuard AI ব্যৱহাৰ কৰাৰ বাবে ধন্যবাদ। আপোনাৰ দিনটো নিৰাপদ হওক! 🌿',
+    farewell: 'Slope Signalব্যৱহাৰ কৰাৰ বাবে ধন্যবাদ। আপোনাৰ দিনটো নিৰাপদ হওক! 🌿',
     chooseLanguage: 'আপোনাৰ চেটবট ভাষা বাছনি কৰক',
   },
   bn: {
-    farewell: 'TerraGuard AI ব্যবহার করার জন্য ধন্যবাদ। আপনার দিনটি নিরাপদ হোক! 🌿',
+    farewell: 'Slope Signalব্যবহার করার জন্য ধন্যবাদ। আপনার দিনটি নিরাপদ হোক! 🌿',
     chooseLanguage: 'আপনার চ্যাটবট ভাষা বেছে নিন',
   },
   brx: {
-    farewell: 'TerraGuard AI बाहायनो थांनायनि थाखाय साबायखर। नोंनि दिन रैखा जाथोन! 🌿',
+    farewell: 'Slope Signalबाहायनो थांनायनि थाखाय साबायखर। नोंनि दिन रैखा जाथोन! 🌿',
     chooseLanguage: 'नोंनि चेटबट राव बासिख',
   },
   ks: {
-    farewell: 'TerraGuard AI pyoh karith thaviv. Tohinuk din mehfooz aas! 🌿',
+    farewell: 'Slope Signalpyoh karith thaviv. Tohinuk din mehfooz aas! 🌿',
     chooseLanguage: 'Apnas chatbot zabaan intikhaab kariv',
   },
   mni: {
-    farewell: 'TerraGuard AI shijinnabagi thagatchari. Nanggi numit yaiphaba oiganu! 🌿',
+    farewell: 'Slope Signalshijinnabagi thagatchari. Nanggi numit yaiphaba oiganu! 🌿',
     chooseLanguage: 'Nanggi chatbot lonta khan-u',
   },
   lus: {
-    farewell: 'TerraGuard AI i hmang avangin kan lawm e. Ni him tak nei rawh! 🌿',
+    farewell: 'Slope Signali hmang avangin kan lawm e. Ni him tak nei rawh! 🌿',
     chooseLanguage: 'I chatbot tawng thlang rawh',
   },
   ne: {
-    farewell: 'TerraGuard AI प्रयोग गर्नुभएकोमा धन्यवाद। तपाईंको दिन सुरक्षित रहोस्! 🌿',
+    farewell: 'Slope Signalप्रयोग गर्नुभएकोमा धन्यवाद। तपाईंको दिन सुरक्षित रहोस्! 🌿',
     chooseLanguage: 'आफ्नो च्याटबोट भाषा छान्नुहोस्',
   },
 };
@@ -412,7 +412,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     id: 'welcome-msg',
     role: 'assistant',
     content: chatbotCopy.welcome,
-    source: 'terraguard-engine',
+    source: 'slope-signal-engine',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   };
 
@@ -450,7 +450,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
   const [isListening, setIsListening] = useState(false);
   const [voiceMode, setVoiceMode] = useState(() => {
     try {
-      return localStorage.getItem('terraguard_voice_mode') === 'true';
+      return localStorage.getItem('slopesignal_voice_mode') === 'true';
     } catch {
       return false;
     }
@@ -513,7 +513,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
 
     setVoiceMode(true);
     try {
-      localStorage.setItem('terraguard_voice_mode', 'true');
+      localStorage.setItem('slopesignal_voice_mode', 'true');
     } catch {
       // ignore
     }
@@ -638,7 +638,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     id: `welcome-${Date.now()}`,
     role: 'assistant',
     content: CHATBOT_COPY[nextLanguage].welcome,
-    source: 'terraguard-engine',
+    source: 'slope-signal-engine',
     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   });
 
@@ -687,7 +687,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
     const nextVoiceMode = !voiceMode;
     setVoiceMode(nextVoiceMode);
     try {
-      localStorage.setItem('terraguard_voice_mode', String(nextVoiceMode));
+      localStorage.setItem('slopesignal_voice_mode', String(nextVoiceMode));
     } catch {
       // ignore
     }
@@ -962,7 +962,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         id: `domain-followup-${Date.now()}`,
         role: 'assistant',
         content: domain === 'hills' ? chatbotCopy.hillsPrompt : chatbotCopy.regionsPrompt,
-        source: 'terraguard-engine',
+        source: 'slope-signal-engine',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -1009,7 +1009,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         content: `${state} selected. I’m loading the available ${
           domain === 'regions' ? 'regions and places' : 'hills and mountain regions'
         } for this state.`,
-        source: 'terraguard-engine',
+        source: 'slope-signal-engine',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -1047,7 +1047,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         {
           id: `zone-error-${Date.now()}`,
           role: 'assistant',
-          source: 'terraguard-data',
+          source: 'slope-signal-data',
           content: chatbotCopy.unavailable(zone.name),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
@@ -1089,7 +1089,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           {
             id: messageId,
             role: 'assistant',
-            source: 'terraguard-location-risk',
+            source: 'slope-signal-location-risk',
             content,
             riskEvaluation: evaluation,
             locationName: zone.name,
@@ -1115,7 +1115,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             id: ackId,
             role: 'assistant',
             content: ackMessage,
-            source: 'terraguard-guide',
+            source: 'slope-signal-guide',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -1192,7 +1192,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
           {
             id: messageId,
             role: 'assistant',
-            source: 'terraguard-location-risk',
+            source: 'slope-signal-location-risk',
             content,
             riskEvaluation: evaluation,
             locationName: hill.name,
@@ -1218,7 +1218,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
             id: ackId,
             role: 'assistant',
             content: ackMessage,
-            source: 'terraguard-guide',
+            source: 'slope-signal-guide',
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
           },
         ]);
@@ -1269,7 +1269,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       awaitingAcknowledgement: false,
     }));
 
-    addGuidedAssistantMessage(`I’m opening ${zone.name} in TerraGuard.`, fromVoice);
+    addGuidedAssistantMessage(`I’m opening ${zone.name} in Slope Signal.`, fromVoice);
     onSelectZone?.(zone);
   };
 
@@ -1283,7 +1283,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         {
           id: `hill-${Date.now()}`,
           role: 'assistant',
-          source: 'terraguard-data',
+          source: 'slope-signal-data',
           content: chatbotCopy.unavailable(hill.name),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
@@ -1317,7 +1317,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
       status: 'SELECTION_LOADING',
     }));
 
-    addGuidedAssistantMessage(`I’m opening ${hill.name} in TerraGuard.`, fromVoice);
+    addGuidedAssistantMessage(`I’m opening ${hill.name} in Slope Signal.`, fromVoice);
     onSelectRegion?.(hill);
   };
 
@@ -1330,7 +1330,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         id,
         role: 'assistant',
         content,
-        source: 'terraguard-guide',
+        source: 'slope-signal-guide',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -1375,7 +1375,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
         id: responseId,
         role: 'assistant' as const,
         content: CHATBOT_COPY[nextLanguage].returningWelcome,
-        source: 'terraguard-engine',
+        source: 'slope-signal-engine',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       },
     ]);
@@ -1637,7 +1637,7 @@ export const ChatWidget: React.FC<ChatWidgetProps> = ({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-200"></span>
             </span>
           </div>
-          <span className="text-xs font-medium tracking-wide sm:text-sm">TerraGuard AI Chat</span>
+          <span className="text-xs font-medium tracking-wide sm:text-sm">Slope Signal AI Chat</span>
         </button>
       )}
 

@@ -114,7 +114,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="min-w-0 flex flex-col">
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-lg font-black tracking-wide leading-tight flex items-center gap-1.5">
-                <span className="text-emerald-500">TerraGuard</span>
+                <span className="text-emerald-500">Slope Signal</span>
                 <span className="text-[11px] font-mono font-bold uppercase px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">
                   AI HQ
                 </span>
@@ -176,11 +176,11 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="relative">
-            <label className="sr-only" htmlFor="terraguard-language-select">{t('header.languageSelector')}</label>
+            <label className="sr-only" htmlFor="slope-signal-language-select">{t('header.languageSelector')}</label>
             <div className={`flex items-center gap-1.5 rounded-lg border px-2 py-1.5 ${isDark ? 'bg-slate-800 border-slate-700 text-slate-100' : 'bg-slate-100 border-slate-300 text-slate-800'}`}>
               <Globe2 className="h-3.5 w-3.5 text-emerald-500" />
               <select
-                id="terraguard-language-select"
+                id="slope-signal-language-select"
                 value={language ?? 'en'}
                 onChange={(e) => setLanguage?.(e.target.value as 'en' | 'hi')}
                 aria-label={t('header.languageSelector')}

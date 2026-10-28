@@ -299,7 +299,7 @@ export const TerraEmergencySos: React.FC<TerraEmergencySosProps> = ({
             >
               <Radio className="w-4 h-4 text-emerald-500 shrink-0" />
               <span>
-                <strong>{t('emergencySos.offlineMesh')}</strong> If cell towers fail, TerraGuard automatically transmits beacon packets over 868MHz LoRa mesh repeaters to disaster authorities.
+                <strong>{t('emergencySos.offlineMesh')}</strong> If cell towers fail, Slope Signal automatically transmits beacon packets over 868MHz LoRa mesh repeaters to disaster authorities.
               </span>
             </div>
           </div>

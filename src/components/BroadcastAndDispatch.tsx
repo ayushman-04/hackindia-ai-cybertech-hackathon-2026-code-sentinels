@@ -12,7 +12,9 @@ import {
   ReliefShelter,
   RoadBlockageRecord,
   RoadBlockageStatus,
+  HazardZone,
 } from '../types';
+import { useMapContext } from '../context/MapContext';
 import { sirenPlayer } from '../utils/audioSiren';
 import { ApiError, LandslideApi } from '../services/api';
 import {
@@ -39,18 +41,43 @@ import {
 
 interface BroadcastAndDispatchProps {
   onSirenTriggered?: () => void;
+  selectedZone?: HazardZone;
+  zones?: HazardZone[];
+  onSelectZone?: (zone: HazardZone) => void;
 }
 
 export const BroadcastAndDispatch: React.FC<BroadcastAndDispatchProps> = ({
   onSirenTriggered,
+  selectedZone: propSelectedZone,
+  zones: propZones,
+  onSelectZone,
 }) => {
-  const selectedTarget = HAZARD_ZONES.find((zone) => zone.state === 'sikkim') || HAZARD_ZONES[0];
+  const { selectedZone: contextSelectedZone, setSelectedZone: setContextSelectedZone } = useMapContext();
+  const availableZones = (propZones && propZones.length > 0) ? propZones : HAZARD_ZONES;
+  const currentSelectedZone = propSelectedZone || contextSelectedZone || availableZones[0];
+
   const [selectedLang, setSelectedLang] = useState<string>('en');
   const [messageText, setMessageText] = useState<string>(ALERT_TEMPLATES['en']);
   const [recipientText, setRecipientText] = useState<string>('');
-  const [targetId, setTargetId] = useState<string>(selectedTarget.id);
+  const [targetId, setTargetId] = useState<string>(currentSelectedZone.id);
   const [isArmed, setIsArmed] = useState<boolean>(true);
   const [auditList, setAuditList] = useState<AuditLogEntry[]>(AUDIT_LOGS);
+
+  // Synchronize targetId when selectedZone changes from another module
+  useEffect(() => {
+    if (currentSelectedZone?.id) {
+      setTargetId(currentSelectedZone.id);
+    }
+  }, [currentSelectedZone?.id]);
+
+  const handleTargetChange = (newId: string) => {
+    setTargetId(newId);
+    const matched = availableZones.find((z) => z.id === newId);
+    if (matched) {
+      onSelectZone?.(matched);
+      setContextSelectedZone?.(matched);
+    }
+  };
 
   // Persisted API states (no static mock initialization for shelters/units/blockages)
   const [tacticalUnits, setTacticalUnits] = useState<TacticalUnit[]>([]);
@@ -96,7 +123,7 @@ export const BroadcastAndDispatch: React.FC<BroadcastAndDispatchProps> = ({
     template_id: string | null;
   } | null>(null);
 
-  const activeTarget = HAZARD_ZONES.find((zone) => zone.id === targetId) || selectedTarget;
+  const activeTarget = availableZones.find((zone) => zone.id === targetId) || currentSelectedZone;
   const activeCorridorBlockage = roadBlockages.find((b) => b.zone_id === targetId) || roadBlockages[0] || null;
   const recipientNumbers = recipientText.split(/[\s,;]+/).map((value) => value.trim()).filter(Boolean);
   const smsSegments = Math.max(1, Math.ceil(messageText.length / 160));
@@ -479,8 +506,8 @@ export const BroadcastAndDispatch: React.FC<BroadcastAndDispatchProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
               <label className="text-[10px] font-mono uppercase text-[#8a9297]">Target area
-                <select value={targetId} onChange={(event) => setTargetId(event.target.value)} className="mt-1 w-full bg-[#051424] text-white border border-[#273647] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#44d8f1]">
-                  {HAZARD_ZONES.map((zone) => <option key={zone.id} value={zone.id}>{zone.state.toUpperCase()} / {zone.name}</option>)}
+                <select value={targetId} onChange={(event) => handleTargetChange(event.target.value)} className="mt-1 w-full bg-[#051424] text-white border border-[#273647] rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#44d8f1]">
+                  {availableZones.map((zone) => <option key={zone.id} value={zone.id}>{zone.state.toUpperCase()} / {zone.name}</option>)}
                 </select>
               </label>
               <div className="rounded-lg border border-[#1c2b3c] bg-[#122131] p-2.5 text-xs">

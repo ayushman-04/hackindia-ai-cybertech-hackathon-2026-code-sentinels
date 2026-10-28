@@ -1,6 +1,6 @@
-# TerraGuard field-image classifier artifacts
+# Slope Signal field-image classifier artifacts
 
-This field-image classifier is separate from TerraGuard's location-risk model.
+This field-image classifier is separate from Slope Signal's location-risk model.
 
 ## Model card
 

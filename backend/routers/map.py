@@ -75,7 +75,7 @@ def _feature_for_zone(zone: HazardZoneModel, risk_score: float, risk_level: str)
             "state": zone.state,
             "district": zone.subDivision,
             "updated_at": "live",
-            "source": "TerraGuard",
+            "source": "Slope Signal",
             "zone_id": zone.id,
             "name": zone.name,
             "corridor": zone.corridor,
@@ -88,7 +88,7 @@ def get_risk_polygons(
     state: Optional[str] = Query(None, description="Optional NER state filter"),
     db: Session = Depends(get_db),
 ):
-    """Return a GeoJSON FeatureCollection for live risk polygons derived from TerraGuard hazard zones."""
+    """Return a GeoJSON FeatureCollection for live risk polygons derived from Slope Signal hazard zones."""
     query = db.query(HazardZoneModel)
     if state and state.lower() != "all":
         query = query.filter(HazardZoneModel.state == state.lower())
@@ -156,7 +156,7 @@ def get_boundaries(
                     "district": f"Boundary Context {index + 1}",
                     "district_code": f"{key.upper()}-{index + 1:02d}",
                     "level": "state",
-                    "source": "TerraGuard boundary context",
+                    "source": "Slope Signal boundary context",
                 },
             })
 

@@ -166,18 +166,18 @@
     "soilSaturation": "Soil Moisture Saturation"
   },
   "chatbot": {
-    "title": "TerraGuard AI Chat",
-    "openLabel": "Open TerraGuard AI",
-    "minimize": "Minimize TerraGuard AI",
-    "close": "Close TerraGuard AI",
+    "title": "Slope Signal AI Chat",
+    "openLabel": "Open Slope Signal AI",
+    "minimize": "Minimize Slope Signal AI",
+    "close": "Close Slope Signal AI",
     "returnHome": "Return to chatbot home",
     "goBack": "Go back",
     "send": "Send",
     "clear": "Clear",
     "languageLabel": "Chatbot language",
-    "placeholder": "Ask TerraGuard Assistant...",
-    "inputLabel": "Ask TerraGuard AI",
-    "welcomeIntro": "Hello! I'm TerraGuard AI",
+    "placeholder": "Ask Slope Signal Assistant...",
+    "inputLabel": "Ask Slope Signal AI",
+    "welcomeIntro": "Hello! I'm Slope Signal AI",
     "welcomeDescription": "I can help you explore landslide risk across the North Eastern Region and Himalayan areas.",
     "hillsButton": "Hills & Mountains",
     "regionsButton": "Regions / Places",
@@ -185,7 +185,7 @@
     "regionsPrompt": "Choose a state to explore monitored regions and places.",
     "hillsPrompt": "Choose a state to explore hills and mountains.",
     "stateLabel": "State",
-    "analyzing": "TerraGuard is analyzing",
+    "analyzing": "Slope Signal is analyzing",
     "openRiskMap": "Open Risk Map",
     "viewRiskDetails": "View Risk Details",
     "checkAnotherRegion": "Check Another Region",
@@ -270,7 +270,7 @@
     "seismicDisclaimer": "Disclaimer: Seismic trigger indicates potential ground motion advisory from NCS feeds. It is an independent geophysical parameter and not a direct landslide prediction."
   },
   "about": {
-    "title": "About TerraGuard System",
+    "title": "About Slope Signal System",
     "subtitle": "Next-Generation AI & GIS Landslide Early Warning System for Critical Himalayan Corridors",
     "multiSourceTitle": "Multi-Source Earth Data",
     "multiSourceDesc": "Seamlessly integrates Sentinel-1 InSAR synthetic aperture radar, NASA SRTM 30m digital elevation models, IMD gridded rainfall telemetry, and real-time piezometric soil pore sensors.",
@@ -290,7 +290,7 @@
     "tacticalCapDesc": "Trigger CAP emergency broadcasts and dispatch relief convoys to shelters.",
     "crowdsourceCvTitle": "Crowdsource CV Intake",
     "crowdsourceCvDesc": "Citizen photo submission with automated Computer Vision rockfall verification.",
-    "footerCompliant": "TerraGuard v2.4 Enterprise • Geological Survey of India (GSI) & National Disaster Management Authority (NDMA) Compliant",
-    "footerBuiltWith": "Built with React 18, Vite, Tailwind CSS, Leaflet GIS, FastAPI & Scikit-Learn"
+    "footerCompliant": "Slope Signal v2.4 Enterprise • Geological Survey of India (GSI) & National Disaster Management Authority (NDMA) Compliant",
+    "footerBuiltWith": "Built with React 19, Vite, Tailwind CSS, Leaflet GIS, FastAPI & Scikit-Learn"
   }
 }

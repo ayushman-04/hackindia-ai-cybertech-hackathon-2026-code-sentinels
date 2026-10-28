@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { HazardZone, OperationalModule } from '../types';
-import { LandslideApi } from '../services/api';
 import {
   Bell,
   AlertTriangle,
@@ -19,8 +18,22 @@ import {
   TrendingUp,
   Volume2,
   VolumeX,
+  Loader2,
 } from 'lucide-react';
 import { useI18n } from '../i18n/index.tsx';
+import { LandslideApi, LiveWeather } from '../services/api';
+
+function parseCoordinates(coordStr?: string): { latitude?: number; longitude?: number } {
+  if (!coordStr) return {};
+  const cleaned = coordStr.replace(/[°NSEW]/gi, '').trim();
+  const parts = cleaned.split(',');
+  if (parts.length >= 2) {
+    const lat = parseFloat(parts[0].trim());
+    const lon = parseFloat(parts[1].trim());
+    if (!isNaN(lat) && !isNaN(lon)) return { latitude: lat, longitude: lon };
+  }
+  return {};
+}
 
 interface TerraAlertsProps {
   zones: HazardZone[];
@@ -87,6 +100,52 @@ export const TerraAlerts: React.FC<TerraAlertsProps> = ({
 
     return true;
   });
+
+  const [alertsWeather, setAlertsWeather] = useState<Record<string, LiveWeather>>({});
+  const [alertsWeatherLoading, setAlertsWeatherLoading] = useState<boolean>(true);
+
+  // Fetch live weather for filtered active alert zones
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setAlertsWeatherLoading(true);
+
+    const fetchAlertsWeather = async () => {
+      const results: Record<string, LiveWeather> = {};
+      await Promise.all(
+        filteredZones.map(async (zone) => {
+          try {
+            const coords = parseCoordinates(zone.coords);
+            const data = await LandslideApi.getLiveWeather(
+              {
+                state: zone.state,
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                regionName: zone.name,
+              },
+              controller.signal
+            );
+            if (data && data.is_live_feed) {
+              results[zone.id] = data;
+            }
+          } catch {
+            // Live weather telemetry unavailable for this zone
+          }
+        })
+      );
+      if (active) {
+        setAlertsWeather(results);
+        setAlertsWeatherLoading(false);
+      }
+    };
+
+    fetchAlertsWeather();
+
+    return () => {
+      active = false;
+      controller.abort();
+    };
+  }, [filteredZones]);
 
   const highCount = zones.filter((z) => z.riskStatus.includes('CRITICAL')).length;
   const medCount = zones.filter((z) => z.riskStatus.includes('ADVISORY')).length;
@@ -410,8 +469,22 @@ export const TerraAlerts: React.FC<TerraAlertsProps> = ({
                     {/* Right side telemetry tags */}
                     <div className="flex flex-wrap lg:flex-col lg:items-end gap-2 shrink-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs text-slate-400">{t('alerts.rainfall')}</span>
-                        <span className="text-xs font-bold font-mono text-blue-500">120 mm / 24h</span>
+                        <span className="text-xs text-slate-400">72h Rainfall:</span>
+                        {alertsWeatherLoading && !alertsWeather[zone.id] ? (
+                          <span className="text-xs font-mono text-slate-400 flex items-center gap-1">
+                            <Loader2 className="w-3 h-3 animate-spin text-cyan-400" />
+                            Loading...
+                          </span>
+                        ) : alertsWeather[zone.id]?.is_live_feed ? (
+                          <span className="text-xs font-bold font-mono text-blue-500">
+                            {alertsWeather[zone.id].antecedent_72h_rainfall_mm.toFixed(1)} mm
+                            <span className="text-[10px] text-slate-400 ml-1 font-normal">
+                              ({alertsWeather[zone.id].current_rainfall_mm_hr.toFixed(1)} mm/h)
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-xs font-mono text-amber-500">Unavailable</span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-xs text-slate-400">{t('alerts.soilSaturation')}</span>

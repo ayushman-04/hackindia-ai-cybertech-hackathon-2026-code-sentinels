@@ -28,10 +28,12 @@ import {
 
 interface CrowdsourceCvVerificationProps {
   onForwardToCap: (reportCode: string) => void;
+  onReportsChanged?: () => void;
 }
 
 export const CrowdsourceCvVerification: React.FC<CrowdsourceCvVerificationProps> = ({
   onForwardToCap,
+  onReportsChanged,
 }) => {
   const [reports, setReports] = useState<CrowdsourceReport[]>(CROWDSOURCE_REPORTS);
   const [activeReport, setActiveReport] = useState<CrowdsourceReport>(CROWDSOURCE_REPORTS[0]);
@@ -74,6 +76,7 @@ export const CrowdsourceCvVerification: React.FC<CrowdsourceCvVerificationProps>
     showToast(
       `CRITICAL DISPATCH: Escalated ${activeReport.code} to District Magistrate & SDMA. CAP emergency alert queued.`
     );
+    onReportsChanged?.();
     onForwardToCap(activeReport.code);
   };
 
@@ -94,6 +97,7 @@ export const CrowdsourceCvVerification: React.FC<CrowdsourceCvVerificationProps>
     if (reports.length > 1) {
       setActiveReport(reports[1]);
     }
+    onReportsChanged?.();
   };
 
   const handleTriggerOfflineSync = async () => {

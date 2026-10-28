@@ -5,9 +5,9 @@ import hiTranslations from './hi/common.json';
 export type AppLanguage = 'en' | 'hi';
 export type ChatbotLanguage = 'en' | 'hi' | 'as' | 'bn' | 'brx' | 'ks' | 'mni' | 'lus' | 'ne';
 
-export const APP_LANGUAGE_STORAGE_KEY = 'terraguard_language';
-export const CHATBOT_LANGUAGE_STORAGE_KEY = 'terraguard_chatbot_language';
-export const CHATBOT_LANGUAGE_EXPLICIT_STORAGE_KEY = 'terraguard_chatbot_language_explicit';
+export const APP_LANGUAGE_STORAGE_KEY = 'slopesignal_language';
+export const CHATBOT_LANGUAGE_STORAGE_KEY = 'slopesignal_chatbot_language';
+export const CHATBOT_LANGUAGE_EXPLICIT_STORAGE_KEY = 'slopesignal_chatbot_language_explicit';
 
 export const appLanguageOptions: Array<{ id: AppLanguage; label: string }> = [
   { id: 'en', label: 'English' },

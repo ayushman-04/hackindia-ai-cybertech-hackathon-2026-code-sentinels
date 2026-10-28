@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
+import React, { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { OperationalModule, NerState, HazardZone } from './types';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
@@ -67,6 +67,37 @@ export default function App() {
       return 'dark';
     }
   });
+  const [reportCount, setReportCount] = useState<number | null>(null);
+  const [reportCountLoading, setReportCountLoading] = useState<boolean>(true);
+  const [reportCountError, setReportCountError] = useState<string | null>(null);
+
+  const refreshReportCount = useCallback(async (signal?: AbortSignal) => {
+    try {
+      setReportCountLoading(true);
+      setReportCountError(null);
+      const reports = await LandslideApi.getReports(selectedState, signal);
+      if (Array.isArray(reports)) {
+        setReportCount(reports.length);
+      } else {
+        setReportCount(null);
+        setReportCountError('Failed to parse reports');
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
+      setReportCount(null);
+      setReportCountError('Reports unavailable');
+    } finally {
+      setReportCountLoading(false);
+    }
+  }, [selectedState]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    refreshReportCount(controller.signal);
+    return () => {
+      controller.abort();
+    };
+  }, [refreshReportCount]);
 
   // Fetch zones from API while maintaining state-aware fallback
   useEffect(() => {
@@ -246,7 +277,7 @@ export default function App() {
         </div>
       )}
 
-      {/* Top Header with TerraGuard Brand, State Filter, Live Clock, Theme & Siren */}
+      {/* Top Header with Slope Signal Brand, State Filter, Live Clock, Theme & Siren */}
       <Header
         selectedState={selectedState}
         onSelectState={setSelectedState}
@@ -262,7 +293,9 @@ export default function App() {
       <Navigation
         activeModule={activeModule}
         onChangeModule={handleNavigateModule}
-        reportCount={12}
+        reportCount={reportCount}
+        reportCountLoading={reportCountLoading}
+        reportCountError={reportCountError}
         theme={theme}
         language={language}
       />
@@ -383,6 +416,7 @@ export default function App() {
                 handleNavigateModule('emergency-broadcast-and-dispatch');
                 triggerGlobalToast(`CAP Alert pre-filled with incident parameters from ${reportCode}`);
               }}
+              onReportsChanged={refreshReportCount}
             />
           </div>
         )}
@@ -391,6 +425,9 @@ export default function App() {
         {activeModule === 'emergency-broadcast-and-dispatch' && (
           <div className="app-wide-container w-full px-3 sm:px-6 pt-4 pb-12">
             <BroadcastAndDispatch
+              selectedZone={selectedZone}
+              zones={zones}
+              onSelectZone={setSelectedZone}
               onSirenTriggered={() =>
                 triggerGlobalToast('Stage 3 High-Decibel Acoustic Warning Siren Active across 6 towers')
               }
@@ -477,7 +514,10 @@ export default function App() {
       <FieldReportModal
         isOpen={isFieldModalOpen}
         onClose={() => setIsFieldModalOpen(false)}
-        onSubmitSuccess={triggerGlobalToast}
+        onSubmitSuccess={(msg) => {
+          triggerGlobalToast(msg);
+          refreshReportCount();
+        }}
         theme={theme}
       />
 
@@ -498,7 +538,7 @@ export default function App() {
             />
             <div>
               <div className="font-bold uppercase text-[11px]">
-                TerraGuard • National Landslide Early Warning System
+                Slope Signal • AI-Assisted Landslide Early Warning & Risk Monitoring System
               </div>
               <div className="text-[10px] text-slate-400">
                 Ministry of Mines • Geological Survey of India (GSI) • National Disaster Management Authority (NDMA)
