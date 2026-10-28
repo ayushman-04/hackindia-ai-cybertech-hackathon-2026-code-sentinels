@@ -20,7 +20,9 @@ import {
 interface NavigationProps {
   activeModule: OperationalModule;
   onChangeModule: (module: OperationalModule) => void;
-  reportCount?: number;
+  reportCount?: number | null;
+  reportCountLoading?: boolean;
+  reportCountError?: string | null;
   theme?: 'dark' | 'light';
   language?: 'en' | 'hi';
 }
@@ -28,7 +30,9 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({
   activeModule,
   onChangeModule,
-  reportCount = 12,
+  reportCount,
+  reportCountLoading = false,
+  reportCountError = null,
   theme = 'dark',
   language,
 }) => {
@@ -126,8 +130,14 @@ export const Navigation: React.FC<NavigationProps> = ({
       id: 'alerts',
       title: t('navigation.alerts'),
       icon: Bell,
-      badge: '4 High',
-      badgeColor: 'text-red-400 bg-red-500/15 border-red-500/30 animate-pulse',
+      badge: reportCountLoading
+        ? '...'
+        : reportCountError
+        ? 'Offline'
+        : typeof reportCount === 'number'
+        ? `${reportCount} ${reportCount === 1 ? 'Report' : 'Reports'}`
+        : undefined,
+      badgeColor: 'text-amber-400 bg-amber-500/15 border-amber-500/30 animate-pulse',
     },
     {
       id: 'emergency-sos',

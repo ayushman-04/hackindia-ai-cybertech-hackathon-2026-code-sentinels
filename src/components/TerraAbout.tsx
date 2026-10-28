@@ -105,7 +105,7 @@ export const TerraAbout: React.FC<TerraAboutProps> = ({ onNavigate, theme }) => 
         >
           <h2 className="font-bold text-base mb-2">ONNX Field-Photo Classification</h2>
           <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            TerraGuard includes an ONNX Runtime-based field-photo classification model for submitted field images. The current classifier supports four categories: landslide, roadBlockage, flood, and other. The classification provides visual decision-support context for field reports and should not be treated as official confirmation of a physical hazard.
+            Slope Signal includes an ONNX Runtime-based field-photo classification model for submitted field images. The current classifier supports four categories: landslide, roadBlockage, flood, and other. The classification provides visual decision-support context for field reports and should not be treated as official confirmation of a physical hazard.
           </p>
         </div>
 
@@ -116,7 +116,7 @@ export const TerraAbout: React.FC<TerraAboutProps> = ({ onNavigate, theme }) => 
         >
           <h2 className="font-bold text-base mb-2">Prototype Notice</h2>
           <p className={`text-xs leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-            TerraGuard is developed as a prototype for the Smart India Hackathon (SIH). The machine-learning, GIS, field-reporting, alert, and decision-support features demonstrate the proposed solution and should not be treated as an official disaster-warning or evacuation system.
+            Slope Signal is developed as an AI-assisted early-warning prototype for the HackIndia AI & CyberTech Hackathon 2026. The machine-learning, GIS, field-reporting, alert, and decision-support features demonstrate the proposed solution and should not be treated as an official disaster-warning or evacuation system.
           </p>
         </div>
 
