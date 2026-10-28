@@ -277,13 +277,13 @@ export const LandslideApi = {
   },
 
   // Layer 3: Crowdsource Reports & Computer Vision Verification
-  async getReports(state?: NerState): Promise<CrowdsourceReport[]> {
+  async getReports(
+    state?: NerState,
+    signal?: AbortSignal,
+    fallback?: CrowdsourceReport[]
+  ): Promise<CrowdsourceReport[]> {
     const query = state && state !== 'all' ? `?state=${encodeURIComponent(state)}` : '';
-    const fallback =
-      state && state !== 'all'
-        ? CROWDSOURCE_REPORTS.filter((r) => r.state === state)
-        : CROWDSOURCE_REPORTS;
-    return fetchJson<CrowdsourceReport[]>(`/api/reports${query}`, undefined, fallback);
+    return fetchJson<CrowdsourceReport[]>(`/api/reports${query}`, { signal }, fallback);
   },
 
   async submitReport(payload: {
@@ -497,7 +497,8 @@ export const LandslideApi = {
   // Real-Time Meteorological Telemetry (IMD / Open-Meteo)
   async getLiveWeather(
     options: string | WeatherRequestOptions = 'sikkim',
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    fallback?: LiveWeather
   ): Promise<LiveWeather> {
     const opts: WeatherRequestOptions =
       typeof options === 'string' ? { state: options } : options;
@@ -507,25 +508,6 @@ export const LandslideApi = {
     if (opts.longitude !== undefined) params.set('longitude', String(opts.longitude));
     if (opts.regionName) params.set('region_name', opts.regionName);
 
-    const fallback: LiveWeather = {
-      source: 'IMD Central Influx (Offline Fallback)',
-      station_name: opts.regionName ? `${opts.regionName} AWS (Offline Baseline)` : 'Mangan-Gangtok IMD AWS Hub',
-      district: opts.regionName ? opts.regionName : 'Mangan / North Sikkim',
-      state,
-      latitude: opts.latitude ?? 27.5,
-      longitude: opts.longitude ?? 88.53,
-      current_temperature_c: 21.8,
-      relative_humidity_pct: 93,
-      current_rainfall_mm_hr: 12.4,
-      antecedent_72h_rainfall_mm: 218.0,
-      soil_saturation_pct: 72.7,
-      wind_speed_kmh: 14.2,
-      radar_status: 'OFFLINE / CACHED BASELINE',
-      bhuvan_satellite_tile: 'ISRO-BHUVAN-NER-01',
-      is_live_feed: false,
-      last_updated: 'Cached Offline Data',
-      forecast: [],
-    };
     return fetchJson(`/api/weather/live?${params.toString()}`, { signal }, fallback);
   },
 
@@ -755,36 +737,15 @@ export const LandslideApi = {
     );
   },
 
-  async getZoneMlRisk(zoneId: string, extraRainfall: number = 0): Promise<ZoneMlRiskEvaluation> {
-    const fallback: ZoneMlRiskEvaluation = {
-      zone_id: zoneId,
-      zone_name: 'Corridor Evaluator',
-      state: 'sikkim',
-      prediction: 1,
-      prediction_label: 'LANDSLIDE',
-      landslide_probability: 0.924,
-      probability_percentage: 92.4,
-      risk_tier: 'VERY_HIGH',
-      action_code: 'RED_EVACUATION_MANDATE',
-      model_name: 'Random Forest Ensemble (ROC-AUC: 0.896)',
-      feature_summary: {
-        elevation_m: 1480,
-        slope_deg: 48.6,
-        soil_saturation_pct: 92.4,
-        rainfall_3d_mm: 180,
-        rainfall_30d_mm: 450,
-      },
-      primary_features: [
-        { name: 'Slope Gradient', value: '48.6°', impact: 'High Gini Weight (11.4%)' },
-        { name: 'Elevation', value: '1,480 m', impact: 'Primary Discriminator (12.7%)' },
-        { name: '3-Day Cumulative Rain', value: '180 mm', impact: 'Trigger Driver (8.0%)' },
-        { name: '30-Day Antecedent Rain', value: '450 mm', impact: 'PWP Builder (7.8%)' },
-      ],
-      historical_precedents_count: 8,
-    };
+  async getZoneMlRisk(
+    zoneId: string,
+    extraRainfall: number = 0,
+    signal?: AbortSignal,
+    fallback?: ZoneMlRiskEvaluation
+  ): Promise<ZoneMlRiskEvaluation> {
     return fetchJson<ZoneMlRiskEvaluation>(
       `/api/zones/${encodeURIComponent(zoneId)}/ml-risk?extra_rainfall=${extraRainfall}`,
-      undefined,
+      { signal },
       fallback
     );
   },
@@ -831,17 +792,17 @@ export const LandslideApi = {
     signal?: AbortSignal
   ): Promise<{ reply: string; source: string; action?: any }> {
     const offlineMessages: Record<string, string> = {
-      hi: `🤖 **TerraGuard सहायक (ऑफलाइन मोड)**:\nआपका प्रश्न प्राप्त हुआ: "${message}"। बैकएंड उपलब्ध नहीं है। आप मुख्य नेविगेशन से Risk Map, Sensor Telemetry और Emergency SOS खोल सकते हैं।`,
-      as: `🤖 **TerraGuard সহায়ক (অফলাইন মোড)**:\nআপোনাৰ প্ৰশ্ন পোৱা গৈছে: "${message}"। বেকএণ্ড উপলব্ধ নহয়।`,
-      bn: `🤖 **TerraGuard সহায়ক (অফলাইন মোড)**:\nআপনার প্রশ্ন পাওয়া গেছে: "${message}"। ব্যাকএন্ড বর্তমানে পাওয়া যাচ্ছে না।`,
-      brx: `🤖 **TerraGuard सहायक (Offline Mode)**:\nनों प्रश्न मोनसे जाबाय: "${message}"। Backend दंनाय नङा।`,
-      ks: `🤖 **TerraGuard madadgar (Offline Mode)**:\nTohan sawal milyo: "${message}". Backend dastiyab na chu.`,
-      mni: `🤖 **TerraGuard assistant (offline mode)**:\nNanggi question phangjari: "${message}". Backend available nattre.`,
-      lus: `🤖 **TerraGuard puihna (offline mode)**:\nI zawhna dawng ta: "${message}". Backend hi available a ni lo.`,
-      ne: `🤖 **TerraGuard सहायक (अफलाइन मोड)**:\nतपाईंको प्रश्न प्राप्त भयो: "${message}"। ब्याकएन्ड उपलब्ध छैन।`,
+      hi: `🤖 **Slope Signal सहायक (ऑफलाइन मोड)**:\nआपका प्रश्न प्राप्त हुआ: "${message}"। बैकएंड उपलब्ध नहीं है। आप मुख्य नेविगेशन से Risk Map, Sensor Telemetry और Emergency SOS खोल सकते हैं।`,
+      as: `🤖 **Slope Signal সহায়ক (অফলাইন মোড)**:\nআপোনাৰ প্ৰশ্ন পোৱা গৈছে: "${message}"। বেকএণ্ড উপলব্ধ নহয়।`,
+      bn: `🤖 **Slope Signal সহায়ক (অফলাইন মোড)**:\nআপনার প্রশ্ন পাওয়া গেছে: "${message}"। ব্যাকএন্ড বর্তমানে পাওয়া যাচ্ছে না।`,
+      brx: `🤖 **Slope Signal सहायक (Offline Mode)**:\nनों प्रश्न मोनसे जाबाय: "${message}"। Backend दंनाय नङा।`,
+      ks: `🤖 **Slope Signal madadgar (Offline Mode)**:\nTohan sawal milyo: "${message}". Backend dastiyab na chu.`,
+      mni: `🤖 **Slope Signal assistant (offline mode)**:\nNanggi question phangjari: "${message}". Backend available nattre.`,
+      lus: `🤖 **Slope Signal puihna (offline mode)**:\nI zawhna dawng ta: "${message}". Backend hi available a ni lo.`,
+      ne: `🤖 **Slope Signal सहायक (अफलाइन मोड)**:\nतपाईंको प्रश्न प्राप्त भयो: "${message}"। ब्याकएन्ड उपलब्ध छैन।`,
     };
     const fallbackResponse = {
-      reply: offlineMessages[language] || `🤖 **TerraGuard Assistant (Offline Mode)**:\nI received your query: "${message}". Backend API is currently unreachable. You can still navigate between Risk Map, Sensor Telemetry, and Emergency SOS using the main navigation bar.`,
+      reply: offlineMessages[language] || `🤖 **Slope Signal Assistant (Offline Mode)**:\nI received your query: "${message}". Backend API is currently unreachable. You can still navigate between Risk Map, Sensor Telemetry, and Emergency SOS using the main navigation bar.`,
       source: 'offline-fallback-client'
     };
     try {
