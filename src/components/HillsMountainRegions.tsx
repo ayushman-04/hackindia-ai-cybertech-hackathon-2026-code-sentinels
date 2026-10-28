@@ -5,10 +5,12 @@ import {
   CloudRain,
   Droplets,
   ExternalLink,
+  LayoutGrid,
   Loader2,
   Mountain,
   Search,
   ShieldCheck,
+  Table,
   Thermometer,
   TriangleAlert,
   Wind,
@@ -19,11 +21,12 @@ import {
   calculateHaversineDistanceKm,
 } from '../data/hillsData';
 import { LandslideApi, LiveWeather } from '../services/api';
-import { EarthquakeResponse, LocationRiskEvaluation } from '../types';
+import { EarthquakeResponse, HazardZone, LocationRiskEvaluation } from '../types';
 import { useMapContext } from '../context/MapContext';
 import { evaluateEventMetrics } from '../utils/seismicMetrics';
 import { fetchLocationRisk } from '../services/locationRiskService';
 import { MlRiskScoreCard } from './MlRiskScoreCard';
+import { RiskAssessmentTable } from './RiskAssessmentTable';
 import { useI18n } from '../i18n/index.tsx';
 
 interface HillsMountainRegionsProps {
@@ -73,6 +76,8 @@ export const HillsMountainRegions: React.FC<HillsMountainRegionsProps> = ({
     ? propSelectedRegion
     : (contextRegion ?? null);
 
+  const [viewMode, setViewMode] = useState<'table' | 'statewise'>('table');
+  const [hazardZones, setHazardZones] = useState<HazardZone[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [collapsedStates, setCollapsedStates] = useState<Record<string, boolean>>({});
   const [weather, setWeather] = useState<LiveWeather | null>(null);
@@ -81,6 +86,23 @@ export const HillsMountainRegions: React.FC<HillsMountainRegionsProps> = ({
   const [earthquakeLoading, setEarthquakeLoading] = useState(false);
   const [riskEvaluation, setRiskEvaluation] = useState<LocationRiskEvaluation | null>(null);
   const [isEvaluatingRisk, setIsEvaluatingRisk] = useState(false);
+
+  // Load hazard zones on mount for tabular risk synthesis
+  useEffect(() => {
+    let active = true;
+    LandslideApi.getHazardZones()
+      .then((zones) => {
+        if (active && zones) {
+          setHazardZones(zones);
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load hazard zones in HillsMountainRegions:', err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
   const groupedRegions = useMemo(() => {
@@ -437,13 +459,69 @@ export const HillsMountainRegions: React.FC<HillsMountainRegionsProps> = ({
                 {t('hills.subtitle')}
               </p>
             </div>
-            <div className="shrink-0 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[10px] font-mono text-emerald-300">
-              {HILLS_AND_MOUNTAIN_REGIONS.length} {t('hills.referenceRegions')}
+            <div className="flex flex-wrap items-center gap-3">
+              {/* View Mode Toggle: Table View vs State-wise View */}
+              <div
+                role="tablist"
+                aria-label="View selection"
+                className={`flex items-center rounded-xl border p-1 ${
+                  isDark ? 'border-slate-700 bg-slate-900/90' : 'border-slate-300 bg-slate-200/70'
+                }`}
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={viewMode === 'table'}
+                  onClick={() => setViewMode('table')}
+                  className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                    viewMode === 'table'
+                      ? 'bg-cyan-500 text-slate-950 shadow-sm font-black'
+                      : isDark
+                      ? 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Table className="h-3.5 w-3.5" />
+                  <span>Table View</span>
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={viewMode === 'statewise'}
+                  onClick={() => setViewMode('statewise')}
+                  className={`flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-all ${
+                    viewMode === 'statewise'
+                      ? 'bg-cyan-500 text-slate-950 shadow-sm font-black'
+                      : isDark
+                      ? 'text-slate-400 hover:text-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <LayoutGrid className="h-3.5 w-3.5" />
+                  <span>State-wise View</span>
+                </button>
+              </div>
+
+              <div className="shrink-0 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-[10px] font-mono text-emerald-300">
+                {HILLS_AND_MOUNTAIN_REGIONS.length} {t('hills.referenceRegions')}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_300px]">
+        {viewMode === 'table' ? (
+          <div className="p-4 sm:p-6">
+            <RiskAssessmentTable
+              theme={theme}
+              selectedRegion={selectedRegion}
+              onSelectRegion={handleSelectRegion}
+              onNavigateToMap={onNavigateToMap}
+              hazardZones={hazardZones}
+              activeEvaluation={riskEvaluation}
+            />
+          </div>
+        ) : (
+          <div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <div>
             <div className="relative mb-5">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -845,6 +923,7 @@ export const HillsMountainRegions: React.FC<HillsMountainRegionsProps> = ({
             )}
           </aside>
         </div>
+        )}
       </section>
     </div>
   );
