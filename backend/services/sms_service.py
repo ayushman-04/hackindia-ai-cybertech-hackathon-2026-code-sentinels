@@ -11,7 +11,7 @@ import requests
 
 from backend import config
 
-logger = logging.getLogger("terraguard.sms_service")
+logger = logging.getLogger("slopesignal.sms_service")
 
 
 class SmsBroadcastService:

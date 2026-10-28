@@ -1,5 +1,5 @@
 """
-LandslideGuard: AI-Powered Landslide Early Warning & Risk Monitoring System
+Slope Signal: AI-Assisted Landslide Early Warning & Risk Monitoring System
 SIH Problem Statement: 26001 (MDoNER & GSI)
 Main FastAPI Application Entrypoint
 """
@@ -15,8 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from backend.config import ALLOWED_ORIGINS, UPLOAD_DIR
 from backend.database.database import engine, Base, ensure_sqlite_schema_migrations
 from backend.database.seeds import seed_database
-from backend.routers import susceptibility, predict, reports, sensors, alerts, weather, ml_model, earthquakes, chatbot, field_classification, map as map_router, analytics
-
+from backend.routers import susceptibility, predict, reports, sensors, alerts, weather, ml_model, earthquakes, chatbot, field_classification, map as map_router
 # Initialize database schema, non-destructive migrations & seed initial state
 Base.metadata.create_all(bind=engine)
 ensure_sqlite_schema_migrations(engine)
@@ -26,8 +25,8 @@ except Exception as e:
     print(f"Warning during seed: {e}")
 
 app = FastAPI(
-    title="LandslideGuard Backend API",
-    description="AI-Based Early Warning & Landslide Risk Monitoring Platform for North Eastern Region (SIH 26001)",
+    title="Slope Signal Backend API",
+    description="AI-Assisted Landslide Early Warning & Risk Monitoring Platform for North Eastern Region (SIH 26001)",
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc"
@@ -63,7 +62,7 @@ app.include_router(ml_model.router)
 app.include_router(earthquakes.router)
 app.include_router(chatbot.router)
 app.include_router(map_router.router)
-app.include_router(analytics.router)
+
 
 # Also expose direct /predict and /model-info aliases for seamless compatibility with landslide-ai API
 @app.post("/predict")
@@ -77,7 +76,7 @@ def model_info_alias():
 @app.get("/")
 def root():
     return {
-        "service": "LandslideGuard AI Platform",
+        "service": "Slope Signal AI Platform",
         "problem_statement": "SIH-26001",
         "status": "Operational",
         "version": "1.0.0",

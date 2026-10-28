@@ -50,7 +50,7 @@ def handle_chat_turn(request: ChatRequest):
             
         return ChatResponse(
             reply=res["reply"],
-            source=res.get("source", "terraguard-engine"),
+            source=res.get("source", "slope-signal-engine"),
             action=action_obj
         )
     except Exception as e:
