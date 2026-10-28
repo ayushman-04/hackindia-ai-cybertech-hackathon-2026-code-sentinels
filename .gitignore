@@ -17,3 +17,5 @@ backend/database/*.db
 backend/uploads/*
 !backend/uploads/.gitkeep
 scratch/
+.venv/
+venv/
