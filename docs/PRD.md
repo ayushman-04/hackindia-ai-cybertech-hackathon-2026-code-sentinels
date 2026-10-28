@@ -1,5 +1,5 @@
 # Product Requirement Document (PRD)
-## TerraGuard: AI-Powered Landslide Early Warning & Spatial GIS Dispatch System (LEWS)
+## Slope Signal: AI-Powered Landslide Early Warning & Spatial GIS Dispatch System (LEWS)
 
 **Document Version:** 2.4.0  
 **Status:** Approved / In Production  
@@ -15,7 +15,7 @@
 In mountainous terrains such as the Himalayas and North-Eastern hill tracts, landslides caused by monsoon cloudbursts, fragile geological fault lines, and rapid tectonic uplift represent recurring catastrophic hazards. Existing monitoring mechanisms typically rely on delayed manual slope inspections or post-incident reporting, resulting in minimal evacuation lead times, heavy economic losses along arterial highways, and tragic loss of human life.
 
 ### 1.2 Product Vision
-**TerraGuard** is a next-generation, national-scale **Landslide Early Warning System (LEWS)** that unifies multi-source satellite Earth observation, in-situ geotechnical IoT sensors, predictive machine learning (Ensemble Random Forest & Temporal Bidirectional LSTM), and an interactive 3D GIS spatial mapping engine. TerraGuard predicts slope failures up to **12 hours in advance**, automates Common Alerting Protocol (CAP) multi-channel broadcasts, and provides actionable evacuation logistics to citizens and disaster management authorities.
+**Slope Signal** is a next-generation, national-scale **Landslide Early Warning System (LEWS)** that unifies multi-source satellite Earth observation, in-situ geotechnical IoT sensors, predictive machine learning (Ensemble Random Forest & Temporal Bidirectional LSTM), and an interactive 3D GIS spatial mapping engine. Slope Signal predicts slope failures up to **12 hours in advance**, automates Common Alerting Protocol (CAP) multi-channel broadcasts, and provides actionable evacuation logistics to citizens and disaster management authorities.
 
 ---
 
@@ -50,7 +50,7 @@ flowchart TB
         HeatmapEngine["ML Heatmap Vectorizer\n(Precedent Radii)"]
     end
 
-    subgraph FrontendUI ["TerraGuard Responsive Web UI (React 18 / Vite)"]
+    subgraph FrontendUI ["Slope Signal Responsive Web UI (React 18 / Vite)"]
         Home["Screen 1: Landing Page"]
         Dashboard["Screen 2: Real-time Dashboard"]
         RiskMap["Screen 3: Spatial GIS Command"]
@@ -225,7 +225,7 @@ interface HazardZone {
 
 ```mermaid
 gantt
-    title TerraGuard Engineering & Deployment Timeline
+    title Slope Signal Engineering & Deployment Timeline
     dateFormat  YYYY-MM-DD
     section Phase 1: Core Engine
     Data Pipeline Ingestion & SQLite Backend      :done,    p1, 2026-06-01, 2026-06-25
@@ -233,9 +233,9 @@ gantt
     section Phase 2: GIS & Spatial Integration
     Leaflet 3D & Google Earth Satellite Canvas   :done,    p3, 2026-07-10, 2026-08-05
     ML Heatmap Synthesis & Stress Simulators      :done,    p4, 2026-08-01, 2026-08-20
-    section Phase 3: TerraGuard 6-Screen UI
+    section Phase 3: Slope Signal 6-Screen UI
     Dual Theme (Light/Dark) & Audio Siren Engine  :done,    p5, 2026-08-20, 2026-09-02
-    TerraGuard 6 Screens (Home, Dash, Map, etc.) :done,    p6, 2026-09-01, 2026-09-08
+    Slope Signal 6 Screens (Home, Dash, Map, etc.) :done,    p6, 2026-09-01, 2026-09-08
     section Phase 4: Production Deployment
     Field Sensor Calibration in Uttarkashi & Mangan:active,  p7, 2026-09-10, 2026-10-01
     Cell Broadcast CAP Gateway Integration        :         p8, 2026-10-01, 2026-10-25

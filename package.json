@@ -1,5 +1,6 @@
 {
-  "name": "react-example",
+  "name": "slope-signal",
+  "description": "AI-Assisted Landslide Early Warning & Risk Monitoring System",
   "private": true,
   "version": "0.0.0",
   "type": "module",

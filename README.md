@@ -1,10 +1,10 @@
-# TerraGuard
+# Slope Signal
 
-## AI-Powered Landslide Risk, Spatial Intelligence, Field Reporting & Early-Warning Platform
+## AI-Assisted Landslide Early Warning & Risk Monitoring System, Spatial Intelligence, Field Reporting & Early-Warning Platform
 
 **Smart India Hackathon 2026 · Problem Statement 26001**
 
-TerraGuard is an integrated disaster-intelligence prototype for landslide-risk monitoring and field intelligence in the North Eastern Region of India. It combines geospatial risk assessment, terrain and environmental analysis, weather and seismic context, field reporting, AI-assisted field-image classification, offline-first mobile reporting, alerts, emergency workflows, and TerraBot decision support.
+Slope Signal is an integrated disaster-intelligence prototype for landslide-risk monitoring and field intelligence in the North Eastern Region of India. It combines geospatial risk assessment, terrain and environmental analysis, weather and seismic context, field reporting, AI-assisted field-image classification, offline-first mobile reporting, alerts, emergency workflows, and TerraBot decision support.
 
 ---
 ## 🔗 Project Links
@@ -17,7 +17,7 @@ TerraGuard is an integrated disaster-intelligence prototype for landslide-risk m
 
 ### Project Overview
 1. [Platform Overview](#1-platform-overview)
-   - [What TerraGuard Does](#what-terraguard-does)
+   - [What Slope Signal Does](#what-slope-signal-does)
    - [Core Objectives](#core-objectives)
    - [Platform Components](#platform-components)
    - [Two Intelligence Pipelines](#two-intelligence-pipelines)
@@ -238,7 +238,7 @@ TerraGuard is an integrated disaster-intelligence prototype for landslide-risk m
 
 # 1. Platform Overview
 
-TerraGuard follows an operational loop:
+Slope Signal follows an operational loop:
 
 ```text
 OBSERVE
@@ -278,7 +278,7 @@ The V2 ONNX classifier processes submitted photographs independently. Its output
 
 Landslide risk depends on interacting terrain, rainfall, geological, land-cover, historical, and seismic conditions. These datasets often exist in different formats and spatial resolutions.
 
-TerraGuard aims to:
+Slope Signal aims to:
 
 - consolidate landslide and environmental information;
 - derive terrain and spatial features;
@@ -293,14 +293,14 @@ TerraGuard aims to:
 - provide multilingual decision support through TerraBot;
 - provide a foundation for future real-time deployment.
 
-TerraGuard is a **decision-support prototype**, not a replacement for official disaster-management authorities.
+Slope Signal is a **decision-support prototype**, not a replacement for official disaster-management authorities.
 
 ---
 
 # 3. Architecture
 
 ```text
-                         TERRAGUARD
+                        SLOPE SIGNAL
                              │
           ┌──────────────────┼──────────────────┐
           │                  │                  │
@@ -371,7 +371,7 @@ Use Home to understand the project and navigate to the major operational modules
 Typical flow:
 
 ```text
-Open TerraGuard  Review overview  Select Risk / Map / Report / Emergency / TerraBot
+Open Slope Signal  Review overview  Select Risk / Map / Report / Emergency / TerraBot
 ```
 
 ## 5.2 Risk Dashboard
@@ -1247,7 +1247,7 @@ Before production:
 - monitor API failures;
 - minimize unnecessary personal data.
 
-TerraGuard's AI does not independently:
+Slope Signal's AI does not independently:
 
 - authorize evacuation;
 - modify location-risk probabilities;
@@ -1260,7 +1260,7 @@ TerraGuard's AI does not independently:
 
 # 23. Dataset & Model Transparency
 
-TerraGuard contains two separate machine-learning pipelines. They solve different problems and use different data. The field-photo classifier must not be confused with the main geographic location-risk model.
+Slope Signal contains two separate machine-learning pipelines. They solve different problems and use different data. The field-photo classifier must not be confused with the main geographic location-risk model.
 
 ## 23.1 Classical location-risk ML model
 
@@ -1501,7 +1501,7 @@ git diff --check
 
 ---
 
-# TerraGuard
+# Slope Signal
 
 **Observe. Assess. Report. Respond.**
 
@@ -1513,7 +1513,7 @@ git diff --check
 
 # 24. End-to-End Workflow
 
-TerraGuard connects the Web application, Flutter mobile application, FastAPI backend, GIS services, machine learning pipelines, field reporting, and operational alert workflows.
+Slope Signal connects the Web application, Flutter mobile application, FastAPI backend, GIS services, machine learning pipelines, field reporting, and operational alert workflows.
 
 ## 24.1 System Workflow
 
@@ -1590,7 +1590,7 @@ A report can be successfully synchronized even when AI classification is unavail
 
 ## 24.4 Classical ML Location-Risk Workflow
 
-The following flow represents the actual classical geospatial ML path used by TerraGuard. It keeps the environmental/geospatial model separate from the field-photo AI classifier.
+The following flow represents the actual classical geospatial ML path used by Slope Signal. It keeps the environmental/geospatial model separate from the field-photo AI classifier.
 
 ```mermaid
 flowchart TD
@@ -1639,8 +1639,8 @@ flowchart TD
 
     O --> P[FastAPI Backend]
 
-    P --> Q[TerraGuard Web Application]
-    P --> R[TerraGuard Mobile Application]
+    P --> Q[Slope Signal Web Application]
+    P --> R[Slope Signal Mobile Application]
 
     Q --> S[GIS Risk Map]
     Q --> T[3D Terrain]
@@ -1778,7 +1778,7 @@ This keeps the selected region and geographic focus consistent across major appl
 - D Prajnasree - https://prajnasree.github.io
 - Hasini chappidi - https://github.com/hasini-ch-7
 
-TerraGuard was developed as a collaborative Smart India Hackathon project and is being further developed as a professional portfolio and applied geospatial AI prototype.
+Slope Signal was developed as a collaborative Smart India Hackathon project and is being further developed as a professional portfolio and applied geospatial AI prototype.
 
 ## Repository
 
@@ -1788,7 +1788,7 @@ https://github.com/supernovadevssihproject-team/landslide-ai
 
 # 26. License
 
-The current repository does not contain a separate root `LICENSE` file. The existing repository documentation states that the project is free to use by anyone and directs licensing or usage-related questions to the TerraGuard team.
+The current repository does not contain a separate root `LICENSE` file. The existing repository documentation states that the project is free to use by anyone and directs licensing or usage-related questions to the Slope Signal team.
 
 Repository:
 
